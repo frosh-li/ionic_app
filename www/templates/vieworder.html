@@ -1,0 +1,16 @@
+<ion-view view-title="订单详情">
+    <ion-nav-buttons side="left">
+        <button class="button icon ion-arrow-left-c" ng-click="goBack()"></button>
+    </ion-nav-buttons>
+    <ion-content padding="false">
+        <div class="card" padding="false">
+          <div class="item item-text-wrap" ng-repeat="item in items" padding="false">
+            <div>品名：{{ item.good_name }}</div>
+            <div>厂家：{{ item.good_cp }}</div>
+            <div>价格：{{ item.good_price }}</div>
+            <div>数量：{{ item.good_number }}</div>
+          </div>
+        </div>
+        <ion-infinite-scroll ng-if="!noMoreItemsAvailable" on-infinite="loadMore()" distance="10%"></ion-infinite-scroll>
+    </ion-content>
+</ion-view>

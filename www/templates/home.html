@@ -1,0 +1,13 @@
+<ion-view view-title="药品市场">
+    <ion-content padding="false">
+        <div class="list">
+            <a ng-repeat="item in items" href="javascript:///;" class="item item-thumbnail-left">
+                <img ng-src="static/images/{{item.good_img}}" style="width:100px;">
+                <h2>{{ item.good_name }}</h2>
+                <h4>{{ item.good_gg }}</h4>
+                <h4>{{ item.good_cp }}</h4>
+            </a>
+        </div>
+        <ion-infinite-scroll ng-if="!noMoreItemsAvailable" on-infinite="loadMore()" distance="10%"></ion-infinite-scroll>
+    </ion-content>
+</ion-view>
