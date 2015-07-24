@@ -1,0 +1,27 @@
+<ion-view view-title="订单详情">
+    <ion-nav-buttons side="left">
+        <button class="button icon ion-arrow-left-c" ng-click="goBack()"></button>
+    </ion-nav-buttons>
+    <ion-content padding="false">
+        <div class="card" padding="false">
+          <div class="item item-text-wrap" ng-repeat="item in items track by $index" padding="false">
+            <div>ID:<span>{{formData[$index].oid}}</span></div>
+            <div>药品ID:<span>{{item.good_id}}</span></div>
+            <div>药品名称:<span>{{item.good_name}}</span></div>
+            <div>药品规格:<span>{{item.good_gg}}</span></div>
+            <div>单位:<span>{{item.good_dw}}</span></div>
+            <div>厂牌:<span>{{item.good_cp}}</span></div>
+            <div>批准文号:<span>{{item.good_pzwh}}</span></div>
+            <div>数量:<span>{{item.good_number}}</span></div>
+            <div>单价:<span>{{item.good_price}}</span></div>
+            <div>总价:<span>{{item.good_amount}}</span></div>
+            <div>
+                拒收数量:
+                <span>{{formData[$index].good_reject}}</span>
+            </div>
+          </div>
+        </div>
+        <ion-infinite-scroll ng-if="!noMoreItemsAvailable" on-infinite="loadMore()" distance="10%"></ion-infinite-scroll>
+    </ion-content>
+</ion-view>
+

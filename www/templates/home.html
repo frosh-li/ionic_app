@@ -1,11 +1,37 @@
+<style>
+.currentBtn > .button{
+    border-top:none;
+    float:left;
+    border-left:0;
+}
+</style>
 <ion-view view-title="药品市场">
     <ion-content padding="false">
-        <div class="list">
-            <a ng-repeat="item in items" href="javascript:///;" class="item item-thumbnail-left">
-                <img ng-src="static/images/{{item.good_img}}" style="width:100px;">
+        <div class="row nav calm" padding>
+        当前分类：{{navs}}
+        </div>
+        <ion-refresher
+            pulling-text="下拉刷新"
+            on-refresh="doRefresh()">
+        </ion-refresher>
+        <div class="currentBtn clearfix">
+            <a class='button button-calm' href="javascript:///;" ng-click="changeCat(0, -1)" ng-class="{'active':-1==filterData.category_0}">不限</a>
+            <a ng-repeat="cats in categories.data"  class='button button-calm' ng-class="{'active':cats.id==filterData.category_0}" href="javascript:///;" ng-click="changeCat(0, cats.id)">{{cats.name}}</a>
+        </div>
+        <div class="currentBtn clearfix">
+            <a ng-repeat="cats in categories_1" class='button button-calm' ng-class="{'active':cats.id==filterData.category_1}" href="javascript:///;" ng-click="changeCat(1, cats.id)" ng-class="cats.id==filterData.category_1">{{cats.name}}</a>
+        </div>
+        <div class="currentBtn clearfix">
+            <a ng-repeat="cats in categories_2" class='button button-calm' ng-class="{'active':cats.id==filterData.category_2}" href="javascript:///;" ng-click="changeCat(2, cats.id)">{{cats.name}}</a>
+
+        </div>
+        <div class="list ">
+            <a ng-repeat="item in items" href="javascript:///;" class="item item-thumbnail-left item-icon-right">
+                <img ng-src="{{host}}/{{item.good_img}}" style="width:100px;">
                 <h2>{{ item.good_name }}</h2>
-                <h4>{{ item.good_gg }}</h4>
-                <h4>{{ item.good_cp }}</h4>
+                <p>{{ item.good_gg }}</p>
+                <p>{{ item.good_cp }}</p>
+                <i class="icon ion-ios-telephone-outline"></i>
             </a>
         </div>
         <ion-infinite-scroll ng-if="!noMoreItemsAvailable" on-infinite="loadMore()" distance="10%"></ion-infinite-scroll>

@@ -6,7 +6,7 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <title>药店手机平台</title>
 
-    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/ionic.app.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
@@ -18,6 +18,8 @@
 
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
+    <!--script src="device.js"></script-->
+    <!--script src="js/JPushPlugin.js"></script-->
     <script src="lib/ionic/js/angular/angular-resource.min.js"></script>
     <!-- your app's js -->
     <script src="js/filter.js"></script>
@@ -26,25 +28,29 @@
 </head>
 
 <body ng-app="ionicApp">
-    <ion-nav-bar class="bar-positive">
+    <ion-nav-bar class="bar-calm">
         <ion-nav-back-button class="button-icon ion-arrow-left-c">
         </ion-nav-back-button>
     </ion-nav-bar>
 
-    <ion-nav-view></ion-nav-view>
+    <ion-nav-view ng-controller="BaseCtrl"></ion-nav-view>
     <script id="templates/tabs.html" type="text/ng-template">
         <ion-view>
-            <ion-tabs class="tabs-icon-top tabs-positive">
+            <ion-tabs class="tabs-icon-top tabs-color-calm" >
 
                 <ion-tab title="药品市场" icon="ion-home" href="#/tab/home">
-                    <ion-nav-view name="home-tab"></ion-nav-view>
+                    <ion-nav-view name="home-tab" class="light"></ion-nav-view>
                 </ion-tab>
 
-                <ion-tab title="订单管理" icon="ion-ios-information" href="#/tab/order">
+                <ion-tab title="订单管理" icon="ion-clipboard" href="#/tab/order">
                     <ion-nav-view name="order-tab"></ion-nav-view>
                 </ion-tab>
 
-                <ion-tab title="拒收订单" icon="ion-arrow-graph-up-right" href="#/tab/reject">
+                <ion-tab title="历史订单" icon="ion-document" href="#/tab/history">
+                    <ion-nav-view name="history-tab"></ion-nav-view>
+                </ion-tab>
+
+                <ion-tab title="拒收订单" icon="ion-flash-off" href="#/tab/reject">
                     <ion-nav-view name="reject-tab"></ion-nav-view>
                 </ion-tab>
 

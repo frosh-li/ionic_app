@@ -94,7 +94,7 @@
       background-color: $background;
     }
     .tab-item {
-      color: rgba($color, $tabs-striped-off-opacity);
+      color: #666;
       opacity: 1;
       .badge{
         opacity:$tabs-striped-off-opacity;
@@ -146,7 +146,7 @@
 @mixin tabs-color($style, $color) {
   .#{$style} {
     .tab-item {
-      color: rgba($color, $tabs-off-opacity);
+      color: #666;
       opacity: 1;
       .badge{
         opacity:$tabs-off-opacity;
@@ -167,7 +167,7 @@
 @mixin tabs-striped-color($style, $color) {
   &.#{$style} {
     .tab-item {
-      color: rgba($color, $tabs-striped-off-opacity);
+      color: #666;
       opacity: 1;
       .badge{
         opacity:$tabs-striped-off-opacity;
@@ -267,7 +267,7 @@
 @mixin tabs-standard-color($style, $color, $off-color:$dark) {
   &.#{$style} {
     .tab-item {
-      color: $off-color;
+      color: #666;
       &.tab-item-active,
       &.active,
       &.activated {

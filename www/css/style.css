@@ -1,1 +1,33 @@
 /* Empty. Add your own CSS if you like */
+
+.pull-right{
+	float:right;
+}
+.button.button-positive.button-outline{
+	padding:2px 20px;
+	color:#0099cc;
+	border-color:#0099cc;
+	border-radius: 10px;
+	margin:0 10px 0 0;
+}
+.button.button-positive.button-outline.button-reject{
+	background-color: #e23958;
+	border-color:#e23958;
+	color:white;
+}
+/*
+.platform-android .tabs-top > .tabs, .tabs.tabs-top{
+	top:auto;
+}
+
+.platform-android .has-tabs-top{
+	top:auto;
+}
+
+.platform-android .has-header.has-subheader.has-tabs-top{
+	top: auto;
+}
+.platform-android .scroll-content{
+	bottom: 52px;
+}
+*/

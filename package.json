@@ -17,11 +17,18 @@
   "cordovaPlugins": [
     "cordova-plugin-device",
     "cordova-plugin-console",
-    "cordova-plugin-whitelist",
-    "cordova-plugin-splashscreen",
-    "com.ionic.keyboard"
+    "com.ionic.keyboard",
+    {
+      "locator": "/opt/jpush-phonegap-plugin",
+      "id": "cn.jpush.phonegap.JPushPlugin"
+    }
   ],
   "cordovaPlatforms": [
-    "ios"
+    "ios",
+    {
+      "platform": "android",
+      "version": "3.5",
+      "locator": "android@3.5"
+    }
   ]
 }

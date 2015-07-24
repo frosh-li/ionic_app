@@ -1,29 +1,5 @@
-<style>
-.mysub .button.button-royal{
-    background-color:#34b4e1;
-    border-color:#34b4e1;
-}
-.mysub .button.button-royal.selected{
-    background-color:white;
-    color:#34b4e1;
-    border-color:white;
-}
-.bar-header{
-    border-bottom-width: 0px;
-}
-</style>
-<ion-view view-title="订单管理" style="border:none;">
-    <div class="bar bar-subheader" style="text-align:center;border:none;background-color:#11c1f3;">
-        <div class="center mysub" style="display:inline-block;margin:0px auto;">
-            <button class="button button-positive button-royal" ng-click="setOrderType(1)" ng-class="{'selected': active==1 }">
-                直接订单
-            </button>
-            <button class="button button-positive button-royal" ng-click="setOrderType(2)" ng-class="{'selected': active==2 }">
-                询价订单
-            </button>
-        </div>
-    </div>
-    <ion-content padding="false" class="has-subheader">
+<ion-view view-title="历史订单">
+    <ion-content padding="false">
         <ion-refresher
             pulling-text="下拉刷新"
             on-refresh="doRefresh()">

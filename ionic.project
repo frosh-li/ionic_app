@@ -1,4 +1,11 @@
 {
   "name": "meanet",
-  "app_id": ""
+  "app_id": "",
+  "browsers": [
+    {
+      "platform": "android",
+      "browser": "crosswalk",
+      "version": "least"
+    }
+  ]
 }
