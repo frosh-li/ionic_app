@@ -1,8 +1,8 @@
 
 var host = "http://101.200.188.188";
-// if(window.navigator.appVersion.indexOf('Mac') > -1){
-//     host = "http://m.eanet.local.wanda.cn";
-// }
+if(window.navigator.appVersion.indexOf('Mac') > -1){
+    host = "http://m.eanet.local.wanda.cn";
+}
 setTimeout(function(){
 
 
@@ -385,6 +385,15 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                 'home-tab': {
                     templateUrl: 'templates/home.html?' + Date.now(),
                     controller: 'HomeTabCtrl'
+                }
+            }
+        })
+        .state('tabs.homepage', {
+            url: '/homepage',
+            views: {
+                'homepage-tab': {
+                    templateUrl: 'templates/homepage.html?' + Date.now(),
+                    controller: 'HomepageTabCtrl'
                 }
             }
         })
@@ -898,6 +907,9 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                 });
             }
         });
+    })
+    .controller('HomepageTabCtrl', function(CategoryService, $ionicModal, $rootScope, marketList, $scope, $timeout) {
+
     })
     .controller('OrderList', function(OrderService, $rootScope, $scope, $timeout, $state, $http) {
         $scope.noMoreItemsAvailable = false;
