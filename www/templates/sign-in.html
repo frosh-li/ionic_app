@@ -9,6 +9,13 @@
                 <span class="input-label">密码</span>
                 <input type="password" ng-model="user.password">
             </label>
+
+            <div class="item item-checkbox">
+             <label class="checkbox">
+                <input type="checkbox" ng-model="rememberPass" ng-change="change()" />
+             </label>
+             记住密码
+         </div>
         </div>
         <div class="padding">
             <button class="button button-block button-balanced" ng-click="signIn(user)">

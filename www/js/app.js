@@ -1,10 +1,279 @@
 
 var host = "http://101.200.188.188";
-if(window.navigator.appVersion.indexOf('Mac') > -1){
-    host = "http://m.eanet.local.wanda.cn";
+// if(window.navigator.appVersion.indexOf('Mac') > -1){
+//     host = "http://m.eanet.local.wanda.cn";
+// }
+setTimeout(function(){
+
+
+if(window.plugins && typeof device !== undefined){
+    window.plugins.jPushPlugin.init();
+    var onDeviceReady   = function(){
+            console.log("JPushPlugin:Device ready!")
+            initiateUI();
+        }
+        var onGetRegistradionID = function(data) {
+            try{
+                console.log("JPushPlugin:registrationID is "+data)
+
+                $("#registrationid").html(data);
+            }
+            catch(exception){
+                console.log(exception);
+            }
+        }
+        var onTagsWithAlias = function(event){
+            try{
+                console.log("onTagsWithAlias");
+                var result="result code:"+event.resultCode+" ";
+                result+="tags:"+event.tags+" ";
+                result+="alias:"+event.alias+" ";
+                $("#tagAliasResult").html(result);
+            }
+            catch(exception){
+                console.log(exception)
+            }
+        }
+        var onOpenNotification = function(event){
+            try{
+                var alertContent
+                if(device.platform == "Android"){
+                    alertContent=window.plugins.jPushPlugin.openNotification.alert;
+                }else{
+                    alertContent   = event.aps.alert;
+                }
+                alert("open Notificaiton:"+alertContent);
+
+            }
+            catch(exception){
+                console.log("JPushPlugin:onOpenNotification"+exception);
+            }
+        }
+        var onReceiveNotification = function(event){
+            try{
+                var alert
+                if(device.platform == "Android"){
+                     alert = window.plugins.jPushPlugin.receiveNotification.alert;
+                }else{
+                     alert   = event.aps.alert;
+                }
+                $("#notificationResult").html(alert);
+
+            }
+            catch(exeption){
+                console.log(exception)
+            }
+        }
+        var onReceiveMessage = function(event){
+            try{
+
+                var message
+                if(device.platform == "Android"){
+                     message = window.plugins.jPushPlugin.receiveMessage.message;
+                }else{
+                     message   = event.content;
+                }
+                 //var extras = window.plugins.jPushPlugin.extras
+
+                 $("#messageResult").html(message);
+
+            }
+            catch(exception){
+                console.log("JPushPlugin:onReceiveMessage-->"+exception);
+            }
+        }
+        var initiateUI = function(){
+
+            try{
+                window.plugins.jPushPlugin.init();
+                window.plugins.jPushPlugin.getRegistrationID(onGetRegistradionID);
+
+                if(device.platform != "Android"){
+                    window.plugins.jPushPlugin.setDebugModeFromIos();
+                    window.plugins.jPushPlugin.setApplicationIconBadgeNumber(0);
+                }else{
+                    window.plugins.jPushPlugin.setDebugMode(true);
+                }
+            }
+            catch(exception){
+                console.log(exception);
+            }
+           $("#setTagWithAliasButton").click(function(ev) {
+                try{
+                    var tag1 = $("#tagText1").attr("value");
+                    var tag2 = $("#tagText2").attr("value");
+                    var tag3 = $("#tagText3").attr("value");
+                    var alias = $("#aliasText").attr("value");
+                    var dd = [];
+
+                    if(tag1==""&&tag2==""&&tag3==""){
+                    }
+                    else{
+                        if(tag1 != ""){
+                            dd.push(tag1);
+                        }
+                        if(tag2 != ""){
+                            dd.push(tag2);
+                        }
+                        if(tag3 != ""){
+                            dd.push(tag3);
+                        }
+                    }
+                    window.plugins.jPushPlugin.setTagsWithAlias(dd,alias);
+
+                }
+                catch(exception){
+                    console.log(exception);
+                }
+            })
+        }
+        document.addEventListener("jpush.setTagsWithAlias", onTagsWithAlias, false);
+        document.addEventListener("deviceready", onDeviceReady, false);
+        document.addEventListener("jpush.openNotification", onOpenNotification, false);
+        document.addEventListener("jpush.receiveNotification", onReceiveNotification, false);
+        document.addEventListener("jpush.receiveMessage", onReceiveMessage, false);
 }
+
+},2000);
+angular.module('locals',[])
+.factory('ls', function($window) {
+  return {
+    set: function(key, value) {
+      $window.localStorage[key] = value;
+    },
+    get: function(key, defaultValue) {
+      return $window.localStorage[key] || defaultValue;
+    },
+    setObject: function(key, value) {
+      $window.localStorage[key] = JSON.stringify(value);
+    },
+    getObject: function(key) {
+      return JSON.parse($window.localStorage[key] || '{}');
+    }
+  }
+});
+
 // document.addEventListener("deviceready", onDeviceReady, false);
-angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
+angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
+.run(function ($http, $ionicPlatform,ls, $rootScope,$ionicActionSheet, $timeout, $ionicPopup, $ionicLoading) {
+    $rootScope.user = ls.getObject('user');
+    $ionicPlatform.ready(function ($rootScope) {
+        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+        // for form inputs)
+        if (window.cordova && window.cordova.plugins.Keyboard) {
+            cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+        }
+        if (window.StatusBar) {
+            // org.apache.cordova.statusbar required
+            StatusBar.styleDefault();
+        }
+
+        //检测更新
+        checkUpdate();
+
+        document.addEventListener("menubutton", onHardwareMenuKeyDown, false);
+    });
+
+
+    // 菜单键
+    function onHardwareMenuKeyDown() {
+        $ionicActionSheet.show({
+            titleText: '检查更新',
+            buttons: [
+                { text: '关于' }
+            ],
+            destructiveText: '检查更新',
+            cancelText: '取消',
+            cancel: function () {
+                // add cancel code..
+            },
+            destructiveButtonClicked: function () {
+                //检查更新
+                checkUpdate();
+            },
+            buttonClicked: function (index) {
+
+            }
+        });
+        $timeout(function () {
+            hideSheet();
+        }, 2000);
+    };
+
+    // 检查更新
+    function checkUpdate() {
+        $http.get(host+'/api/app/getVersion').success(function(data){
+            var serverAppVersion = data.version; //从服务端获取最新版本
+            //获取版本
+            console.log(serverAppVersion);
+            if(serverAppVersion != '0.0.1'){
+                $ionicLoading.show({
+                    template: "请先更新程序"
+                });
+                window.location.href="itms-services://?action=download-manifest&url=https%3A%2F%2Fwww.pgyer.com%2Fapiv1%2Fapp%2Fplist%3FaId%3Db7918385428a4ae687bbcb0e05bd86ac%26_api_key%3D1fe17f04dfd977b9009cab3ef9ef8442";
+                $timeout(function(){
+                    $ionicLoading.hide();
+                },2000);
+            }
+
+
+
+
+        })
+
+    }
+
+    // 显示是否更新对话框
+    function showUpdateConfirm() {
+        var confirmPopup = $ionicPopup.confirm({
+            title: '版本升级',
+            template: '1.xxxx;</br>2.xxxxxx;</br>3.xxxxxx;</br>4.xxxxxx', //从服务端获取更新的内容
+            cancelText: '取消',
+            okText: '升级'
+        });
+        confirmPopup.then(function (res) {
+            if (res) {
+                $ionicLoading.show({
+                    template: "已经下载：0%"
+                });
+                var url = "http://101.200.188.188/static/meanet.apk"; //可以从服务端获取更新APP的路径
+                var targetPath = "file:///storage/sdcard0/meanet.apk"; //APP下载存放的路径，可以使用cordova file插件进行相关配置
+                var trustHosts = true
+                var options = {};
+                var progressFunc = function (progress) {
+                    //进度，这里使用文字显示下载百分比
+                    $timeout(function () {
+                        var downloadProgress = (progress.loaded / progress.total) * 100;
+                        $ionicLoading.show({
+                            template: "已经下载：" + Math.floor(downloadProgress) + "%"
+                        });
+                        if (downloadProgress > 99) {
+                            $ionicLoading.hide();
+                        }
+                    })
+                };
+                var filetransfer = new FileTransfer(progressFunc);
+
+                filetransfer.download(url, targetPath,function (result) {
+                    // 打开下载下来的APP
+                    cordova.plugins.fileOpener2.open(targetPath, 'application/vnd.android.package-archive'
+                    ).then(function () {
+                            // 成功
+                        }, function (err) {
+                            // 错误
+                        });
+                    $ionicLoading.hide();
+                }, function (err) {
+                    alert('下载失败');
+                    console.log(err);
+                    $ionicLoading.hide();
+                },trustHosts,options);
+            } else {
+                // 取消更新
+            }
+        });
+    }
+})
 .config(function($stateProvider, $urlRouterProvider,$ionicConfigProvider, $httpProvider) {
 
     $httpProvider.defaults.transformRequest = function(data){
@@ -39,7 +308,7 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
           'response': function(response){
             if(response.data && response.data.status == 302){
               console.log('需要登录');
-              window.location = './login.html';
+              window.location = './index.html';
             }
             if(response.data && response.data.status == 301){
               console.log('权限不够');
@@ -91,134 +360,7 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
       });
 */
     $ionicConfigProvider.tabs.position('bottom');
-	if(window.plugins && typeof device !== undefined){
-		alert('plugins');
-		window.plugins.jPushPlugin.init();
-		var onDeviceReady   = function(){
-                console.log("JPushPlugin:Device ready!")
-                initiateUI();
-            }
-            var onGetRegistradionID = function(data) {
-                try{
-                    console.log("JPushPlugin:registrationID is "+data)
 
-                    $("#registrationid").html(data);
-                }
-                catch(exception){
-                    console.log(exception);
-                }
-            }
-            var onTagsWithAlias = function(event){
-                try{
-                    console.log("onTagsWithAlias");
-                    var result="result code:"+event.resultCode+" ";
-                    result+="tags:"+event.tags+" ";
-                    result+="alias:"+event.alias+" ";
-                    $("#tagAliasResult").html(result);
-                }
-                catch(exception){
-                    console.log(exception)
-                }
-            }
-            var onOpenNotification = function(event){
-                try{
-                    var alertContent
-                    if(device.platform == "Android"){
-                        alertContent=window.plugins.jPushPlugin.openNotification.alert;
-                    }else{
-                        alertContent   = event.aps.alert;
-                    }
-                    alert("open Notificaiton:"+alertContent);
-
-                }
-                catch(exception){
-                    console.log("JPushPlugin:onOpenNotification"+exception);
-                }
-            }
-            var onReceiveNotification = function(event){
-                try{
-					var alert
-                    if(device.platform == "Android"){
-						 alert = window.plugins.jPushPlugin.receiveNotification.alert;
-                    }else{
-                         alert   = event.aps.alert;
-                    }
-                    $("#notificationResult").html(alert);
-
-                }
-                catch(exeption){
-                    console.log(exception)
-                }
-            }
-            var onReceiveMessage = function(event){
-                try{
-
-                    var message
-                    if(device.platform == "Android"){
-						 message = window.plugins.jPushPlugin.receiveMessage.message;
-                    }else{
-                         message   = event.content;
-                    }
-                     //var extras = window.plugins.jPushPlugin.extras
-
-                     $("#messageResult").html(message);
-
-                }
-                catch(exception){
-                    console.log("JPushPlugin:onReceiveMessage-->"+exception);
-                }
-            }
-            var initiateUI = function(){
-
-				try{
-                    window.plugins.jPushPlugin.init();
-                    window.plugins.jPushPlugin.getRegistrationID(onGetRegistradionID);
-
-                    if(device.platform != "Android"){
-                        window.plugins.jPushPlugin.setDebugModeFromIos();
-                        window.plugins.jPushPlugin.setApplicationIconBadgeNumber(0);
-                    }else{
-                        window.plugins.jPushPlugin.setDebugMode(true);
-                    }
-				}
-				catch(exception){
-					console.log(exception);
-				}
-               $("#setTagWithAliasButton").click(function(ev) {
-                    try{
-                        var tag1 = $("#tagText1").attr("value");
-                        var tag2 = $("#tagText2").attr("value");
-                        var tag3 = $("#tagText3").attr("value");
-                        var alias = $("#aliasText").attr("value");
-                        var dd = [];
-
-                        if(tag1==""&&tag2==""&&tag3==""){
-                        }
-                        else{
-                            if(tag1 != ""){
-                                dd.push(tag1);
-                            }
-                            if(tag2 != ""){
-                                dd.push(tag2);
-                            }
-                            if(tag3 != ""){
-                                dd.push(tag3);
-                            }
-                        }
-                        window.plugins.jPushPlugin.setTagsWithAlias(dd,alias);
-
-                    }
-                    catch(exception){
-                        console.log(exception);
-                    }
-                })
-            }
-            document.addEventListener("jpush.setTagsWithAlias", onTagsWithAlias, false);
-            document.addEventListener("deviceready", onDeviceReady, false);
-            document.addEventListener("jpush.openNotification", onOpenNotification, false);
-            document.addEventListener("jpush.receiveNotification", onReceiveNotification, false);
-            document.addEventListener("jpush.receiveMessage", onReceiveMessage, false);
-	}
     $stateProvider
         .state('signin', {
             url: '/sign-in',
@@ -284,14 +426,25 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
                 }
             }
 
-        });
+        })
+        .state('tabs.promotion', {
+            url: '/promotion',
+            views: {
+                'promotion-tab': {
+                    templateUrl: 'templates/promotion.html',
+                    controller: "Promotion"
+                }
+            }
+
+        })
+        ;
 
 
         $urlRouterProvider.otherwise('/sign-in');
 
 })
 
-.controller('BaseCtrl', function($rootScope, $http, $scope, $state) {
+.controller('BaseCtrl', function($rootScope, $http, $scope, $state, $ionicLoading) {
     $http.post(host + '/api/user/login', user).then(function(res) {
         console.log(res);
         if (res.data.status === 200) {
@@ -307,7 +460,10 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
             */
 
         } else {
-            alert('登录失败');
+            $ionicLoading.show({
+                template: '登录失败',
+                duration:2000
+            });
         }
 
     }, function(err) {
@@ -315,28 +471,50 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
     });
 
 })
-
-
-.controller('SignInCtrl', function($rootScope, $http, $scope, $state) {
-
+.controller('SignInCtrl', function($rootScope, $http, $scope, $state, ls, $ionicLoading) {
+    $scope.user = {
+        username: ls.getObject('user').username,
+        password: ''
+    };
+    if (ls.get('rememberPass') == 'true') {
+        $scope.user.password = ls.get('password');
+    }
+    $scope.rememberPass = ls.get('rememberPass') == 'true' ? true : false;
+    $scope.change = function() {
+        $scope.rememberPass = $scope.rememberPass == true ? false : true;
+    }
     $scope.signIn = function(user) {
-
+        if ($scope.rememberPass == true) {
+            ls.set('password', $scope.user.password);
+        } else {
+            ls.set('rememberPass', 'false');
+        }
         $http.post(host + '/api/user/login', user).then(function(res) {
             console.log(res);
             if (res.data.status === 200) {
-                $rootScope.user = res.data
+                ls.setObject('user', res.data);
+
+                ls.set('rememberPass', $scope.rememberPass);
+                console.log($scope.rememberPass);
+                $rootScope.user = res.data;
                 console.log(res.data);
                 $state.go('tabs.home');
                 /*
                 if (/^1[0-9]{5}$/.test(res.data.comp_id)) {
                     $state.go('tabs.home');
                 } else {
-                    alert('登录失败，非药店账号');
+                    $ionicLoading.show({
+    template: '登录失败，非药店账号',
+    duration:2000
+});
                 }
                 */
 
             } else {
-                alert('登录失败');
+                $ionicLoading.show({
+                    template: '登录失败',
+                    duration: 2000
+                });
             }
 
         }, function(err) {
@@ -347,7 +525,7 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
 
 })
 
-.controller('mainCtrl', function($http, $scope, $state) {
+.controller('mainCtrl', function($http, $scope, $state, $ionicLoading) {
 
         $scope.logout = function(user) {
             $state.go('tabs.signin');
@@ -386,14 +564,18 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
         params.showHistory = 0;
         //params.hasMore = true;
         function getList(id) {
-            return $resource(host + '/api/order/order/:id', {"id":"@id"}, {
+            return $resource(host + '/api/order/order/:id', {
+                "id": "@id"
+            }, {
                 query: {
                     method: "GET",
                     params: params
                 },
                 delete: {
                     method: "delete",
-                    params: {id:id}
+                    params: {
+                        id: id
+                    }
                 }
             })
         }
@@ -411,14 +593,18 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
         params.showHistory = 1;
         //params.hasMore = true;
         function getList(id) {
-            return $resource(host + '/api/order/order/:id', {"id":"@id"}, {
+            return $resource(host + '/api/order/order/:id', {
+                "id": "@id"
+            }, {
                 query: {
                     method: "GET",
                     params: params
                 },
                 delete: {
                     method: "delete",
-                    params: {id:id}
+                    params: {
+                        id: id
+                    }
                 }
             })
         }
@@ -427,12 +613,15 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
             params: params
         }
     })
-    .factory('RejectOrderService', function($resource) {
+    .factory('RejectOrderService', function($resource, $rootScope) {
         var params = {};
         params.page = 1;
         params.count = 10;
         //params.type = 2;
-        params.type = "supplie_id";
+        if ($rootScope.user.role_type == 1) {
+            params.type = "supplie_id";
+        }
+
         //params.hasMore = true;
         function getList() {
             return $resource(host + '/api/order/rejectOrder/', {}, {
@@ -489,18 +678,42 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
         }
     })
     .factory('CategoryService', ['$resource',
-      function($resource){
-        return $resource('api/category/category', {id:'@id',search:'@search'}, {
-          query: {method:'GET', params:{}, isArray:false},
-          //get:{method:'GET', params: {ids: "@ids"}, isArray:false},//不用delete方法也不用这个了
-          getOne:{method:'GET', params: {id: "@id"}, isArray:false},//为了优化请求地址，实际上应该是{id: "@id"}
-          save: {method:'POST', isArray:false},
-          update:{method:"PUT", isArray:false},
-          delete: {method: "DELETE", params: {id:'@id'}}
-        });
-      }
+        function($resource) {
+            return $resource(host + '/api/category/category', {
+                id: '@id',
+                search: '@search'
+            }, {
+                query: {
+                    method: 'GET',
+                    params: {},
+                    isArray: false
+                },
+                //get:{method:'GET', params: {ids: "@ids"}, isArray:false},//不用delete方法也不用这个了
+                getOne: {
+                    method: 'GET',
+                    params: {
+                        id: "@id"
+                    },
+                    isArray: false
+                }, //为了优化请求地址，实际上应该是{id: "@id"}
+                save: {
+                    method: 'POST',
+                    isArray: false
+                },
+                update: {
+                    method: "PUT",
+                    isArray: false
+                },
+                delete: {
+                    method: "DELETE",
+                    params: {
+                        id: '@id'
+                    }
+                }
+            });
+        }
     ])
-    .controller('HomeTabCtrl', function(CategoryService, $ionicModal,$rootScope,marketList, $scope, $timeout) {
+    .controller('HomeTabCtrl', function(CategoryService, $ionicModal, $rootScope, marketList, $scope, $timeout) {
         $rootScope.host = host;
         $scope.noMoreItemsAvailable = false;
         console.log(marketList);
@@ -534,12 +747,12 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
             }
             marketList.params.page++;
         });
-        $scope.doRefresh =function(){
+        $scope.doRefresh = function() {
             $timeout(function() {
                 marketList.params.page = 1;
-                if($scope.catid > -1){
+                if ($scope.catid > -1) {
                     marketList.params.catid = $scope.catid;
-                }else{
+                } else {
                     delete marketList.params.catid;
                 }
                 marketList.getList().query(function(res) {
@@ -562,46 +775,55 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
         };
 
         $scope.catid = -1;
-        $scope.categories_0 = [{id:-1,name:'不限'}];
-        $scope.categories_1 = [{id:-1,name:'不限'}];
-        $scope.categories_2 = [{id:-1,name:'不限'}];
+        $scope.categories_0 = [{
+            id: -1,
+            name: '不限'
+        }];
+        $scope.categories_1 = [{
+            id: -1,
+            name: '不限'
+        }];
+        $scope.categories_2 = [{
+            id: -1,
+            name: '不限'
+        }];
         $scope.categories = CategoryService.query();
-        $scope.$watch('filterData', function(){
+        $scope.$watch('filterData', function() {
             myNavs = [];
             console.log(myNavs);
             console.log($scope.categories);
-            if($scope.categories && $scope.categories.data)
-            $scope.categories.data.forEach(function(cat){
-                console.log('cat',cat, $scope.filterData.category_0);
-                if(cat.id == $scope.filterData.category_0){
-                    if(cat.id !== -1){
-                        myNavs.push(cat.name);
-                        if(cat.children){
-                            cat.children.forEach(function(subcat){
-                                if(subcat.id == $scope.filterData.category_1){
-                                    if(subcat.id != -1){
-                                        myNavs.push(subcat.name);
-                                        if(subcat.children){
-                                            subcat.children.forEach(function(subcat2){
-                                                if(subcat2.id == $scope.filterData.category_2){
-                                                    if(subcat2.id != -1){
-                                                        myNavs.push(subcat2.name);
+            if ($scope.categories && $scope.categories.data)
+                $scope.categories.data.forEach(function(cat) {
+                    console.log('cat', cat, $scope.filterData.category_0);
+                    if (cat.id == $scope.filterData.category_0) {
+                        if (cat.id !== -1) {
+                            myNavs.push(cat.name);
+                            if (cat.children) {
+                                cat.children.forEach(function(subcat) {
+                                    if (subcat.id == $scope.filterData.category_1) {
+                                        if (subcat.id != -1) {
+                                            myNavs.push(subcat.name);
+                                            if (subcat.children) {
+                                                subcat.children.forEach(function(subcat2) {
+                                                    if (subcat2.id == $scope.filterData.category_2) {
+                                                        if (subcat2.id != -1) {
+                                                            myNavs.push(subcat2.name);
+                                                        }
                                                     }
-                                                }
-                                            });
+                                                });
+                                            }
                                         }
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
-                    }
 
-                }
-                $scope.navs = myNavs.join(" > ");
-            });
+                    }
+                    $scope.navs = myNavs.join(" > ");
+                });
         }, true);
-        $scope.changeCat = function(level, id){
-            switch(level){
+        $scope.changeCat = function(level, id) {
+            switch (level) {
                 case 0:
                     $scope.filterData.category_0 = id;
                     break;
@@ -614,49 +836,64 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
             }
             console.log($scope.filterData);
             $scope.page = 1;
-            if($scope.filterData.category_2 > -1){
+            if ($scope.filterData.category_2 > -1) {
                 $scope.catid = $scope.filterData.category_2;
-            }else if($scope.filterData.category_1 > -1){
+            } else if ($scope.filterData.category_1 > -1) {
                 $scope.catid = $scope.filterData.category_1;
-            }else if($scope.filterData.category_0 > -1){
+            } else if ($scope.filterData.category_0 > -1) {
                 $scope.catid = $scope.filterData.category_0;
             }
             // $scope.catid = $scope.filterData.category_2 || $scope.filterData.category_1 || $scope.filterData.category_0;
             console.log($scope.catid);
             $scope.doRefresh();
         }
-        $scope.$watch('filterData.category_0', function(){
+        $scope.$watch('filterData.category_0', function() {
             $scope.filterData.category_1 = -1;
             $scope.filterData.category_2 = -1;
-            if(parseInt($scope.filterData.category_0) === -1){
-                $scope.categories_1 = [{id:-1,name:'不限'}];
-                $scope.categories_2 = [{id:-1,name:'不限'}];
+            if (parseInt($scope.filterData.category_0) === -1) {
+                $scope.categories_1 = [{
+                    id: -1,
+                    name: '不限'
+                }];
+                $scope.categories_2 = [{
+                    id: -1,
+                    name: '不限'
+                }];
 
-            }else{
+            } else {
                 // console.log($scope.categories.data, $scope.formData.category_0);
 
-                $scope.categories.data && $scope.categories.data.forEach(function(item){
-                    if(item.id === parseInt($scope.filterData.category_0)){
+                $scope.categories.data && $scope.categories.data.forEach(function(item) {
+                    if (item.id === parseInt($scope.filterData.category_0)) {
                         console.log(item.children);
-                        $scope.categories_1 = [{id:-1,name:'不限'}].concat(item.children);
+                        $scope.categories_1 = [{
+                            id: -1,
+                            name: '不限'
+                        }].concat(item.children);
 
                     }
                 });
             }
         });
 
-        $scope.$watch('filterData.category_1', function(){
+        $scope.$watch('filterData.category_1', function() {
             $scope.filterData.category_2 = -1;
-            if(parseInt($scope.filterData.category_1) === -1){
-                $scope.categories_2 = [{id:-1,name:'不限'}];
+            if (parseInt($scope.filterData.category_1) === -1) {
+                $scope.categories_2 = [{
+                    id: -1,
+                    name: '不限'
+                }];
 
-            }else{
+            } else {
                 // console.log($scope.categories.data, $scope.formData.category_0);
 
-                $scope.categories_1 && $scope.categories_1.forEach(function(item){
-                    if(item.id === parseInt($scope.filterData.category_1)){
+                $scope.categories_1 && $scope.categories_1.forEach(function(item) {
+                    if (item.id === parseInt($scope.filterData.category_1)) {
                         console.log(item.children);
-                        $scope.categories_2 = [{id:-1,name:'不限'}].concat(item.children);
+                        $scope.categories_2 = [{
+                            id: -1,
+                            name: '不限'
+                        }].concat(item.children);
                     }
                 });
             }
@@ -671,7 +908,7 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
         //var url = "/api/items/market?page='+$scope.page+"&count="+$scope.count";
         OrderService.params.showHistory = $scope.showHistory;
         OrderService.params.page = 1;
-        if($rootScope.user.role_type == 1){
+        if ($rootScope.user.role_type == 1) {
             OrderService.params.type = 2;
         }
         $scope.loadMore = function() {
@@ -689,7 +926,7 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
             }, 1000);
 
         };
-        $scope.doRefresh =function(){
+        $scope.doRefresh = function() {
             $timeout(function() {
                 OrderService.params.page = 1;
                 OrderService.getList().query(function(res) {
@@ -733,43 +970,62 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
                 OrderService.params.page++;
             });
         };
-        $scope.goto = function(order_id, supplie_id, order_status){
+        $scope.goto = function(order_id, supplie_id, order_status) {
             $state.go('vieworder', {
                 order_id: order_id,
                 supplie_id: supplie_id,
                 order_status: order_status
             });
         };
-        $scope.del = function(id){
+        $scope.del = function(id) {
             var order = new OrderService.getList(id);
-            order.delete(function(ret){
+            order.delete(function(ret) {
                 console.log(ret);
-                if(ret.status == 500){
-                    alert('系统错误'+"\n"+ret.err);
+                if (ret.status == 500) {
+                    $ionicLoading.show({
+                        template: '系统错误' + "\n" + ret.err,
+                        duration: 2000
+                    });
                     return;
                 }
-                alert('删除成功');
+                $ionicLoading.show({
+                    template: '删除成功',
+                    duration: 2000
+                });
                 $scope.doRefresh();
                 // window.location.reload();
             })
         }
-        $scope.submitOrder = function(order_id){
-            $http.post(host + '/api/order/orderSubmit',{order_id: order_id}).success(function(ret){
-                if(ret.status == 500){
-                    alert(ret.err || ret.msg);
-                }else if(ret.status == 200){
-                    alert('提交订单成功');
+        $scope.submitOrder = function(order_id) {
+            console.log($rootScope.user.role_type);
+            var url = $rootScope.user.role_type == 1 ? "/api/order/orderPFSubmit" : "/api/order/orderSubmit";
+            $http.post(host + url, {
+                order_id: order_id
+            }).success(function(ret) {
+                if (ret.status == 500) {
+                    $ionicLoading.show({
+                        template: ret.err || ret.msg,
+                        duration: 2000
+                    });
+                } else if (ret.status == 200) {
+                    $ionicLoading.show({
+                        template: '提交订单成功',
+                        duration: 2000
+                    });
                     // window.location.reload();
                     $scope.doRefresh();
                 }
             });
         }
-        $scope.gotoReject = function(order_id, supplie_id){
-            $state.go('rejectOrderItem',{order_id: order_id, supplie_id: supplie_id});
+        $scope.gotoReject = function(order_id, supplie_id) {
+            $state.go('rejectOrderItem', {
+                order_id: order_id,
+                supplie_id: supplie_id
+            });
             // $scope.items = [];
         }
     })
-    .controller('HistoryOrderList', function(HistoryOrderService,$rootScope, $scope, $timeout, $state, $http) {
+    .controller('HistoryOrderList', function(HistoryOrderService, $rootScope, $scope, $timeout, $state, $http) {
 
         $scope.noMoreItemsAvailable = false;
         console.log(HistoryOrderService);
@@ -779,7 +1035,7 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
         HistoryOrderService.params.showHistory = $scope.showHistory;
         HistoryOrderService.params.ordertype = 1;
         HistoryOrderService.params.page = 1;
-        if($rootScope.user.role_type == 1){
+        if ($rootScope.user.role_type == 1) {
             HistoryOrderService.params.type = 2;
         }
         $scope.loadMore = function() {
@@ -798,7 +1054,7 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
 
         };
 
-        $scope.doRefresh =function(){
+        $scope.doRefresh = function() {
             $timeout(function() {
                 HistoryOrderService.params.page = 1;
                 HistoryOrderService.getList().query(function(res) {
@@ -826,41 +1082,58 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
             }
             HistoryOrderService.params.page++;
         });
-        $scope.goto = function(order_id, supplie_id, order_status){
+        $scope.goto = function(order_id, supplie_id, order_status) {
             $state.go('vieworder', {
                 order_id: order_id,
                 supplie_id: supplie_id,
                 order_status: order_status
             });
         };
-        $scope.del = function(id){
+        $scope.del = function(id) {
             var order = new HistoryOrderService.getList(id);
-            order.delete(function(ret){
+            order.delete(function(ret) {
                 console.log(ret);
-                if(ret.status == 500){
-                    alert('系统错误'+"\n"+ret.err);
+                if (ret.status == 500) {
+                    $ionicLoading.show({
+                        template: '系统错误' + "\n" + ret.err,
+                        duration: 2000
+                    });
                     return;
                 }
-                alert('删除成功');
+                $ionicLoading.show({
+                    template: '删除成功',
+                    duration: 2000
+                });
                 $scope.doRefresh();
             })
         }
-        $scope.submitOrder = function(order_id){
-            $http.post(host+'/api/order/orderSubmit',{order_id: order_id}).success(function(ret){
-                if(ret.status == 500){
-                    alert(ret.err || ret.msg);
-                }else if(ret.status == 200){
-                    alert('提交订单成功');
+        $scope.submitOrder = function(order_id) {
+            $http.post(host + '/api/order/orderSubmit', {
+                order_id: order_id
+            }).success(function(ret) {
+                if (ret.status == 500) {
+                    $ionicLoading.show({
+                        template: ret.err || ret.msg,
+                        duration: 2000
+                    });
+                } else if (ret.status == 200) {
+                    $ionicLoading.show({
+                        template: '提交订单成功',
+                        duration: 2000
+                    });
                     $scope.doRefresh();
                 }
             });
         }
-        $scope.gotoReject = function(order_id, supplie_id){
-            $state.go('rejectOrderItem',{order_id: order_id, supplie_id: supplie_id});
+        $scope.gotoReject = function(order_id, supplie_id) {
+            $state.go('rejectOrderItem', {
+                order_id: order_id,
+                supplie_id: supplie_id
+            });
             // $scope.items = [];
         }
     })
-    .controller('RejectOrder', function(RejectOrderService,$state, $stateParams, $scope, $timeout) {
+    .controller('RejectOrder', function($http, RejectOrderService, $state, $stateParams, $scope, $timeout) {
         $scope.noMoreItemsAvailable = false;
         console.log(RejectOrderService);
         $scope.items = [];
@@ -881,7 +1154,7 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
             }, 1000);
 
         };
-        $scope.doRefresh =function(){
+        $scope.doRefresh = function() {
             $timeout(function() {
                 RejectOrderService.params.page = 1;
                 RejectOrderService.getList().query(function(res) {
@@ -924,28 +1197,58 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
                 RejectOrderService.params.page++;
             });
         }
-        $scope.gotoRejectView = function(order_id){
-            $state.go('rejectOrderItemView',{
+        $scope.gotoRejectView = function(order_id) {
+            $state.go('rejectOrderItemView', {
                 order_id: order_id
             })
-        }
+        };
+        $scope.confirmReject = function(order_id) {
+            $http.post(host + '/api/order/rejectOrder', {
+                order_id: order_id
+            }).success(function(ret) {
+                if (ret.status == 200) {
+                    $ionicLoading.show({
+                        template: '确认拒收成功',
+                        duration: 2000
+                    });
+                    window.location.reload();
+                } else {
+                    $ionicLoading.show({
+                        template: '拒收失败，请刷新页面重试',
+                        duration: 2000
+                    });
+                }
+
+            });
+        };
     })
-    .controller('RejectOrderItem', function($ionicHistory, $scope,$timeout, $stateParams, $http, RejectOrderItemService){
+    .controller('RejectOrderItem', function($ionicHistory, $scope, $timeout, $stateParams, $http, RejectOrderItemService) {
         var orderid = $scope.orderid = $stateParams.order_id;
         $scope.companyid = $stateParams.supplie_id;
-        $scope.processForm = function(){
-            var oid = [],good_reject = [];
-            $scope.formData.forEach(function(item){
+        $scope.processForm = function() {
+            var oid = [],
+                good_reject = [];
+            $scope.formData.forEach(function(item) {
                 oid.push(item.oid);
                 good_reject.push(item.good_reject);
             });
 
-            $http.post(host+ '/api/order/rejectItems', {orderid:$scope.orderid,good_reject:good_reject.join("|"),oid:oid.join("|")}).success(function(ret){
-                if(ret.status == 200){
-                    alert('拒收成功，请等待确认');
+            $http.post(host + '/api/order/rejectItems', {
+                orderid: $scope.orderid,
+                good_reject: good_reject.join("|"),
+                oid: oid.join("|")
+            }).success(function(ret) {
+                if (ret.status == 200) {
+                    $ionicLoading.show({
+                        template: '拒收成功，请等待确认',
+                        duration: 2000
+                    });
                     window.history.back();
-                }else{
-                    alert('拒收失败，请刷新页面重试');
+                } else {
+                    $ionicLoading.show({
+                        template: '拒收失败，请刷新页面重试',
+                        duration: 2000
+                    });
                 }
 
             });
@@ -975,7 +1278,7 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
 
             $scope.items = $scope.items.concat(res.result);
             $scope.formData = [];
-            res.result.forEach(function(item, index){
+            res.result.forEach(function(item, index) {
                 $scope.formData.push({
                     oid: item.oid,
                     good_reject: item.good_reject,
@@ -989,7 +1292,7 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
             }
             RejectOrderItemService.params.page++;
         });
-        $scope.goBack = function(){
+        $scope.goBack = function() {
             $ionicHistory.goBack();
         };
 
@@ -1000,7 +1303,7 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
         $scope.supplie_id = $stateParams.supplie_id;
         $scope.order_status = $stateParams.order_status;
         OrderDetailService.params.page = 1;
-        $scope.goBack = function(){
+        $scope.goBack = function() {
             $ionicHistory.goBack();
         };
 
@@ -1034,6 +1337,22 @@ angular.module('ionicApp', ['ionic', 'ngResource', 'storeAppFilters'])
             }
             OrderDetailService.params.page++;
         });
+    })
+    .controller('Promotion', function($http, $scope, $timeout, $stateParams, $ionicHistory, OrderDetailService) {
+
+        //http://eanet.local.wanda.cn/api/push/push
+        $scope.list = [];
+        $scope.getPush = function() {
+            $scope.list = [];
+            $http.get(host + '/api/push/push').success(function(ret) {
+                $scope.list = ret;
+
+            }).finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
+        $scope.getPush();
+
     })
 
 ;

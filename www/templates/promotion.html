@@ -1,0 +1,16 @@
+<ion-view view-title="促销">
+    <ion-content padding="false">
+    	<ion-refresher
+            pulling-text="下拉刷新"
+            on-refresh="getPush()">
+        </ion-refresher>
+        <ion-list>
+            <ion-item collection-repeat="item in list">
+                <div>{{ item.title }}</div>
+                <div>{{ item.msg }}</div>
+                <div class="calm">{{ item.name }}</div>
+                <div class="positive">{{item.create_date|filterDate}}发布</div>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>

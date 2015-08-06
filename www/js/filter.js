@@ -38,6 +38,11 @@ storeAppFilters.filter('rejectFilter', function() {
     return ret;
   };
 });
+storeAppFilters.filter('filterDate', function() {
+  return function(input) {
+    return input.split('T')[0];
+  };
+});
 
 storeAppFilters.filter('userStateCN', function() {
   return function(input) {

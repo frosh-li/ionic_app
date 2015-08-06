@@ -15,20 +15,14 @@
     "shelljs": "^0.3.0"
   },
   "cordovaPlugins": [
-    "cordova-plugin-device",
-    "cordova-plugin-console",
-    "com.ionic.keyboard",
     {
       "locator": "/opt/jpush-phonegap-plugin",
       "id": "cn.jpush.phonegap.JPushPlugin"
-    }
+    },
+    "cordova-plugin-splashscreen",
+    "cordova-plugin-whitelist"
   ],
   "cordovaPlatforms": [
-    "ios",
-    {
-      "platform": "android",
-      "version": "3.5",
-      "locator": "android@3.5"
-    }
+    "android"
   ]
 }

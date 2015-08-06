@@ -5,9 +5,18 @@
             on-refresh="doRefresh()">
         </ion-refresher>
         <ion-list>
-            <ion-item collection-repeat="item in items" ng-click="gotoRejectView(item.order_id)">
+            <ion-item collection-repeat="item in items">
                 <span>{{ item.order_id }}</span>
                 <span class="pull-right calm">{{item.order_reject | rejectFilter}}</span>
+                <div class="pull-left">供应商：{{ item.name }}</div>
+                <div class="pull-left">创建时间：{{ item.order_date }}</div>
+                <div class="pull-left">订货笔数：{{ item.itemcount }}</div>
+                <div class="pull-left">订单金额：{{ item.total_amount }}</div>
+                <div style="margin:15px 0;">
+                    <a class="button button-positive button-outline button-small " ng-click="gotoRejectView(item.order_id)">查看</a>
+
+                    <a class="button button-positive button-outline button-small button-reject" ng-if="item.order_type == 1 && item.order_status == 5 && item.order_reject == 1 && user.role_type == 1" href="javascript:///;" ng-click="confirmReject('{{item.order_id}}')">确认拒收</a>
+                </div>
             </ion-item>
         </ion-list>
         <ion-infinite-scroll ng-if="!noMoreItemsAvailable" on-infinite="loadMore()" distance="10%"></ion-infinite-scroll>

@@ -7,7 +7,13 @@
         <ion-list>
             <ion-item collection-repeat="item in items">
                 <span class="pull-left">{{ item.order_id }}</span>
-                <span class="pull-right" ng-class="{'calm':item.order_status == 5}">{{item.order_status | orderStatusFilter}}</span>
+
+                <span class="pull-right" ng-class="{'calm':item.order_status == 5}">订单号：{{item.order_status | orderStatusFilter}}</span>
+                <div class="pull-left">供应商：{{ item.name }}</div>
+                <div class="pull-left">创建时间：{{ item.order_date }}</div>
+                <div class="pull-left">订货笔数：{{ item.itemcount }}</div>
+                <div class="pull-left">订单金额：{{ item.total_amount }}</div>
+
                 <div ng-if="item.order_type == 1" style="margin:15px 0;">
                     <a class="button button-positive button-outline button-small " ng-click="goto('{{item.order_id}}',{{item.supplie_id}},{{item.order_status}})">查看</a>
                     <a class="button button-positive button-outline button-small " ng-if="item.order_status == 1" href="javascript:///;" ng-click="del(item.order_id)">删除</a>
