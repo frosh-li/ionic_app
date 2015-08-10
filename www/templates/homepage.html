@@ -1,55 +1,150 @@
+<ion-slide-box delegate-handle="homepage">
+    <ion-slide show-pager=t rue>
+        <ion-view view-title="首页">
+            <div class="searchheader">
+                <i class="icon ion-eye" ng-click="gotoCategory()"></i>
+                <input type="text" ng-model="search.good_name" placeholder="品名" />
+                <i class="icon ion-search" ng-click="psearch()" ></i>
+            </div>
+            <ion-content padding="false">
+                <div class="homepage swiper">
+                    <ion-slide-box>
+                        <ion-slide ng-repeat="item in list">
+                            <div class="box pink">
+                                <img ng-src="{{item.src}}" class="scale" ng-click="showBigPic(item.src)" />
+                            </div>
+                        </ion-slide>
+                    </ion-slide-box>
 
-<ion-view view-title="拒收订单">
-    <div class="searchheader">
-        <i class="icon ion-eye"></i>
-        <input type="text" />
-        <i class="icon ion-search" ></i>
-    </div>
-    <ion-content padding="false">
-        <div class="homepage swiper">
-            <img src="img/home/PNG05.png" class="scale" />
-        </div>
-        <div class="menus">
-            <a href="#">
-                <i class="m_01"></i>
-            </a>
-            <a href="#">
-                <i class="m_02"></i>
-            </a>
-            <a href="#">
-                <i class="m_03"></i>
-            </a>
-            <a href="#">
-                <i class="m_04"></i>
-            </a>
-        </div>
-        <div class="tj_list clearfix">
-            <div class="main_tj">
-                <img src="img/home/PNG13.png" class="scale" />
-            </div>
-            <div class="sub_tj">
-                <img src="img/home/PNG14.png" class="scale" />
-                <img src="img/home/PNG15.png" class="scale" />
-            </div>
-        </div>
-        <div class="tj_list clearfix">
-            <div class="main_tj">
-                <img src="img/home/PNG14.png" class="scale" />
-                <img src="img/home/PNG15.png" class="scale" />
-            </div>
-            <div class="sub_tj">
-                <img src="img/home/PNG18.png" class="scale" />
+                </div>
+                <div class="menus">
+                    <a href="javascript:///;" ng-click="psearch()">
+                        <i class="m_01"></i>
+                    </a>
+                    <a href="#">
+                        <i class="m_02"></i>
+                    </a>
+                    <a href="#">
+                        <i class="m_03"></i>
+                    </a>
+                    <a href="#">
+                        <i class="m_04"></i>
+                    </a>
+                </div>
+                <div class="tj_list clearfix">
+                    <div class="main_tj">
+                        <img ng-src="{{adlist[0].src}}" class="scale" ng-click="showBigPic(adlist[0].src)" />
+                    </div>
+                    <div class="sub_tj">
+                        <img ng-src="{{adlist[1].src}}" class="scale" ng-click="showBigPic(adlist[1].src)" />
+                        <img ng-src="{{adlist[2].src}}" class="scale" ng-click="showBigPic(adlist[2].src)" />
+                    </div>
+                </div>
+                <div class="tj_list clearfix">
+                    <div class="main_tj">
+                        <img ng-src="{{adlist[3].src}}" class="scale" ng-click="showBigPic(adlist[3].src)" />
+                        <img ng-src="{{adlist[4].src}}" class="scale" ng-click="showBigPic(adlist[4].src)" />
+                    </div>
+                    <div class="sub_tj">
+                        <img ng-src="{{adlist[5].src}}" class="scale" ng-click="showBigPic(adlist[5].src)" />
+                    </div>
+                </div>
+                <div class="tj_list clearfix">
+                    <div class="main_tj">
+                        <img ng-src="{{adlist[6].src}}" class="scale" ng-click="showBigPic(adlist[6].src)" />
+                    </div>
+                    <div class="sub_tj">
+                        <img ng-src="{{adlist[7].src}}" class="scale" ng-click="showBigPic(adlist[7].src)" />
+                        <img ng-src="{{adlist[8].src}}" class="scale" ng-click="showBigPic(adlist[8].src)" />
+                    </div>
+                </div>
+            </ion-content>
+        </ion-view>
+    </ion-slide>
+    <ion-slide>
+        <ion-view view-title="药品市场">
+            <div class="market-header">
+                    <i class="icon ion-android-arrow-back" ng-click="boxgoto(0)"></i>
+                    <span>{{market_title}}</span>
+                </div>
+            <ion-content padding="false">
 
-            </div>
-        </div>
-        <div class="tj_list clearfix">
-            <div class="main_tj">
-                <img src="img/home/PNG21.png" class="scale" />
-            </div>
-            <div class="sub_tj">
-                <img src="img/home/PNG22.png" class="scale" />
-                <img src="img/home/PNG23.png" class="scale" />
-            </div>
-        </div>
-    </ion-content>
-</ion-view>
+                <div style="margin-top:45px;"></div>
+                <!--
+                <div class="row nav calm" padding>
+                    当前分类：{{navs}}
+                </div>
+
+                <div class="currentBtn clearfix">
+                    <a class='button button-calm' href="javascript:///;" ng-click="changeCat(0, -1)" ng-class="{'active':-1==filterData.category_0}">不限</a>
+                    <a ng-repeat="cats in categories.data" class='button button-calm' ng-class="{'active':cats.id==filterData.category_0}" href="javascript:///;" ng-click="changeCat(0, cats.id)">{{cats.name}}</a>
+                </div>
+                <div class="currentBtn clearfix">
+                    <a ng-repeat="cats in categories_1" class='button button-calm' ng-class="{'active':cats.id==filterData.category_1}" href="javascript:///;" ng-click="changeCat(1, cats.id)" ng-class="cats.id==filterData.category_1">{{cats.name}}</a>
+                </div>
+                <div class="currentBtn clearfix">
+                    <a ng-repeat="cats in categories_2" class='button button-calm' ng-class="{'active':cats.id==filterData.category_2}" href="javascript:///;" ng-click="changeCat(2, cats.id)">{{cats.name}}</a>
+
+                </div>
+                -->
+                <ion-refresher pulling-text="下拉刷新" on-refresh="doRefresh()">
+                </ion-refresher>
+                <div class="list" padding>
+                    <div ng-repeat="item in items" href="javascript:///;" class="market-list">
+                        <div style="float:left">
+                            <img ng-src="{{host}}/{{item.good_img}}" style="width:70px;" />
+                            <div class="actions" ng-if="user.role_type==2">
+                                <i class="icon ion-android-remove" ng-click="changeNumber(item.good_id, -1)"></i>
+                                <input type="text" ng-model="formData[item.good_id]" value=0 />
+                                <i class="icon ion-android-add" ng-click="changeNumber(item.good_id,1)"></i>
+                            </div>
+                            <a ng-if="user.role_type==2" href="javascript:///;" class="buy" ng-click="buy(item.good_id, item.good_company,item.good_id)">购买</a>
+                        </div>
+                        <div>
+                            <h2>{{ item.good_name }}</h2>
+                            <span>剂型：{{ item.good_gg }}</span>
+                            <span>生产商：{{ item.good_cp }}</span>
+                            <span>供应商：{{ item.company_name }}</span>
+                            <div class="center">
+                                <span class="center" style="color:#47e0de">销售价：{{item.good_price | toInt}}</span>
+                                <span class="center" style="color:#e52f00">零售价：{{item.good_lsj | toInt}}</span>
+                                <span class="center" style="color:#24d40f">折扣率：{{item.good_price/item.good_lsj*100 | toInt}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ion-infinite-scroll ng-if="!noMoreItemsAvailable" on-infinite="loadMore()" distance="10%"></ion-infinite-scroll>
+            </ion-content>
+        </ion-view>
+    </ion-slide>
+    <ion-slide>
+        <ion-view view-title="药品分类">
+            <div class="market-header">
+                    <i class="icon ion-android-arrow-back" ng-click="boxgoto(0)"></i>
+                    <span>{{market_title}}</span>
+                </div>
+            <ion-content padding="false">
+                <div style="margin-top:45px;"></div>
+                <div class="box-category">
+                    <div class="category-left">
+                        <!--a href="javascript:///;" ng-click="changeCat(0, -1)" ng-class="{'active':-1==filterData.category_0}">不限</a-->
+                        <a ng-repeat="cats in categories.data" ng-class="{'active':cats.id==filterData.category_0}" href="javascript:///;" ng-click="changeCat(0, cats.id)">{{cats.name}}</a>
+                    </div>
+                    <div class="category-right">
+                        <div class="" ng-repeat = "cats in categories_1">
+                            <div class="subtitle">{{cats.name}}</div>
+                            <ul class="clearfix">
+                                <li ng-repeat="icat in cats.children">
+                                    <img ng-src="{{host}}/static/cats/cat_{{icat.id}}.png" />
+                                    <span>{{icat.name}}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+
+            </ion-content>
+        </ion-view>
+    </ion-slide>
+</ion-slide-box>

@@ -22,7 +22,11 @@ storeAppFilters.filter('roleTypeToCN', function() {
   };
 });
 
-
+storeAppFilters.filter('toInt', function() {
+  return function(input) {
+    return parseInt(input).toFixed(2);
+  };
+});
 
 storeAppFilters.filter('rejectFilter', function() {
   return function(input) {
