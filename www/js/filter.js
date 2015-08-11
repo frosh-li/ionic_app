@@ -27,6 +27,12 @@ storeAppFilters.filter('toInt', function() {
     return parseInt(input).toFixed(2);
   };
 });
+storeAppFilters.filter('toTotalInt', function() {
+  return function(input) {
+    return parseInt(input);
+  };
+});
+
 
 storeAppFilters.filter('rejectFilter', function() {
   return function(input) {

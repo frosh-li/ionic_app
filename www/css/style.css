@@ -5,11 +5,33 @@
 }
 .button.button-positive.button-outline{
 	padding:2px 20px;
-	color:#0099cc;
-	border-color:#0099cc;
+	color:#6eb3f8;
+	border-color:#6eb3f8;
 	border-radius: 10px;
 	margin:0 10px 0 0;
+	line-height: 18px;
+    padding: 0px 16px;
+    background-color: #6eb3f8;
+    color: white;
+    font-size: 12px;
+    min-height: 22px;
+    border-radius: 4px;
 }
+.button.button-positive.button-outline.yellow{
+	padding:2px 20px;
+	color:#f3b35c;
+	border-color:#f3b35c;
+	border-radius: 10px;
+	margin:0 10px 0 0;
+	line-height: 18px;
+    padding: 0px 16px;
+    background-color: #f3b35c;
+    color: white;
+    font-size: 12px;
+    min-height: 22px;
+    border-radius: 4px;
+}
+
 .button.button-positive.button-outline.button-reject{
 	background-color: #e23958;
 	border-color:#e23958;
@@ -123,6 +145,44 @@ html .clearfix {display: block;}
 	width:80px;
 	height:86px;
 	background-size: cover;
+}
+.menus > a i.m_05{
+	background:url(../img/me/PNG06.png) no-repeat;
+	width:80px;
+	height:86px;
+	background-size: cover;
+}
+.menus > a i.m_06{
+	background:url(../img/me/PNG07.png) no-repeat;
+	width:80px;
+	height:86px;
+	background-size: cover;
+}
+.menus > a i.m_07{
+	background:url(../img/me/PNG08.png) no-repeat;
+	width:80px;
+	height:86px;
+	background-size: cover;
+}
+.menus > a i.m_08{
+	background:url(../img/me/PNG09.png) no-repeat;
+	width:80px;
+	height:86px;
+	background-size: cover;
+}
+.menus > a i.m_09{
+	background:url(../img/me/PNG10.png) no-repeat;
+	width:80px;
+	height:86px;
+	background-size: cover;
+}
+.menus.memenus{
+	margin-top:10px;
+	display: -webkit-box;
+}
+.menus.memenus > a i{
+	width: 4.7rem;
+    height: 4.7rem;
 }
 .tj_list .main_tj{
 	float:left;
@@ -354,4 +414,57 @@ html .clearfix {display: block;}
 	display: block;
     width: 90%;
     margin: 2% auto;
+}
+
+.market-header span{
+	color:white;
+}
+
+.webkitbox{
+	display: -webkit-box;
+}
+.webkitbox > div{
+	-webkit-box-flex: 1;
+	color:#999;
+	font-size: 12px;
+	width:50%;
+}
+.track-tabs{
+	height:36px;
+	line-height: 36px;
+	font-size: 14px;
+	display: -webkit-box;
+}
+
+.track-tabs span{
+	display: block;
+	-webkit-box-flex: 1;
+	text-align: center;
+	color:#656565;
+}
+
+.track-tabs span.selected{
+	color:#ff9933;
+	border-bottom: 2px solid #ff9933
+}
+.sub-promotion span{
+	font-size: 12px;
+}
+.feedback textarea{
+    width: 100%;
+    height: 14rem;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 4px;
+}
+.feedback button.button.button-light{
+	background-color:#6eb3f8;
+	color:white;
+}
+.rejectPage input{
+	width:100%;
+	margin-top:6px;
+}
+.rejectPage ion-item div{
+	line-height: 30px;
 }

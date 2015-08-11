@@ -388,6 +388,33 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                 }
             }
         })
+        .state('tabs.me', {
+            url: '/me',
+            views: {
+                'me-tab': {
+                    templateUrl: 'templates/me.html?' + Date.now(),
+                    controller: 'MeCtrl'
+                }
+            }
+        })
+        .state('tabs.track', {
+            url: '/track',
+            views: {
+                'track-tab': {
+                    templateUrl: 'templates/track.html?' + Date.now(),
+                    controller: 'TrackCtrl'
+                }
+            }
+        })
+        .state('tabs.submit', {
+            url: '/submit',
+            views: {
+                'submit-tab': {
+                    templateUrl: 'templates/track.html?' + Date.now(),
+                    controller: 'TrackCtrl'
+                }
+            }
+        })
         .state('tabs.homepage', {
             url: '/homepage',
             views: {
@@ -1075,6 +1102,124 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
         }
 
     })
+.controller('MeCtrl', function($state, $http, CategoryService, $ionicSlideBoxDelegate, $ionicModal, SwiperService, $ionicModal, $rootScope, marketList, $scope, $timeout) {
+        $rootScope.host = "http://eanet.local.wanda.cn/";
+        $scope.promotions = [];
+        $timeout(function(){
+            $ionicSlideBoxDelegate.$getByHandle('homepage').enableSlide(false);
+        },100);
+        $scope.getPush = function() {
+            $scope.promotions = [];
+            $http.get(host + '/api/push/push').success(function(ret) {
+                $scope.promotions = ret;
+
+            }).finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
+        // $scope.getPush();
+        $scope.market_title = "我的";
+        $scope.search = {
+            // supplie_id: "",
+            // supplie_name: "",
+            // supplie_pingying: ""
+            good_name: '',
+            good_promotion:false
+        };
+        SwiperService.query(function(data){
+            $scope.list = [];
+            data.forEach(function(item){
+                item.src = $rootScope.host + item.src;
+                $scope.list.push(item);
+            });
+            $ionicSlideBoxDelegate.update();
+        });
+        SwiperService.query({type: 1}, function(data){
+            $scope.adlist = [];
+            data.forEach(function(item){
+                item.src = $rootScope.host + item.src;
+                $scope.adlist.push(item);
+            });
+        });
+        $ionicModal.fromTemplateUrl('image-modal.html', {
+          scope: $scope,
+          animation: 'slide-in-up'
+        }).then(function(modal) {
+          $scope.modal = modal;
+        });
+
+        $scope.openModal = function() {
+          $scope.modal.show();
+        };
+
+        $scope.closeModal = function() {
+          $scope.modal.hide();
+        };
+
+        //Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+          $scope.modal.remove();
+        });
+        // Execute action on hide modal
+        $scope.$on('modal.hide', function() {
+          // Execute action
+        });
+        // Execute action on remove modal
+        $scope.$on('modal.removed', function() {
+          // Execute action
+        });
+        $scope.$on('modal.shown', function() {
+          console.log('Modal is shown!');
+        });
+
+
+
+        $scope.boxgoto = function(index){
+            $ionicSlideBoxDelegate.$getByHandle('homepage').slide(index);
+        };
+        $scope.gotoCategory = function(){
+            market_title = "药品分类";
+            $scope.getPush();
+            $scope.boxgoto(2);
+        }
+        $scope.gotoPromotion = function(){
+            $scope.market_title = "促销信息";
+            $scope.getPush();
+            $scope.boxgoto(1);
+        };
+        $scope.logout = function(){
+            $state.go('signin');
+        };
+        $scope.gotoAboutUs = function(){
+            $scope.market_title = "关于我们";
+            $scope.boxgoto(2);
+        };
+        $scope.gotoFeedback = function(){
+            $scope.market_title = "意见反馈";
+            $scope.boxgoto(3);
+        };
+        $scope.feedbackmsg = "";
+        $scope.postFeedback = function(feedbackmsg){
+            feedbackmsg = feedbackmsg.replace(/\s/g,"");
+            $http.post(host + "/api/app/feedback", {
+                feedback: feedbackmsg
+            }).success(function(ret) {
+                //$scope.feedbackmsg = "";
+                if (ret.status == 500) {
+                    $ionicLoading.show({
+                        template: ret.err || ret.msg,
+                        duration: 2000
+                    });
+                } else if (ret.status == 200) {
+                    $ionicLoading.show({
+                        template: '提交成功',
+                        duration: 2000
+                    });
+                    // window.location.reload();
+                }
+            });
+        }
+    })
     .controller('OrderList', function(OrderService, $rootScope, $scope, $timeout, $state, $http) {
         $scope.noMoreItemsAvailable = false;
         console.log(OrderService);
@@ -1201,63 +1346,114 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             // $scope.items = [];
         }
     })
-    .controller('HistoryOrderList', function(HistoryOrderService, $rootScope, $scope, $timeout, $state, $http) {
-
+    .controller('TrackCtrl', function(RejectOrderItemService, OrderDetailService, SwiperService,$ionicSlideBoxDelegate, OrderService, $rootScope, $scope, $timeout, $state, $http) {
+        var inSubmit = window.location.hash === "#/tab/submit" ? 1 : 0;
+        $scope.market_title=inSubmit ? "订单提交":"订单追踪";
+        $scope.currentOrderStatus = inSubmit ? 1 : 2;
+        $scope.tabtype = 0;
+        $timeout(function(){
+            $ionicSlideBoxDelegate.$getByHandle('homepage').enableSlide(false);
+        },100);
+        $scope.boxgoto = function(index){
+            $ionicSlideBoxDelegate.$getByHandle('homepage').slide(index);
+        };
+        OrderService.params.order_status = $scope.currentOrderStatus;
+        $scope.changeTab = function(type, order_status){
+            if(type == 1){
+                $scope.currentOrderStatus = -1;
+                $scope.items = [];
+                OrderService.params.showHistory = 1;
+                OrderService.params.order_status = -1;
+                OrderService.params.reject=1;
+            }else{
+                $scope.currentOrderStatus = order_status;
+                $scope.items = [];
+                OrderService.params.showHistory = type == 2 ? 1 : 0;
+                OrderService.params.order_status = order_status;
+                OrderService.params.reject = -1;
+            }
+            $scope.doRefresh();
+        }
         $scope.noMoreItemsAvailable = false;
-        console.log(HistoryOrderService);
-        $scope.showHistory = window.location.hash === "#/tab/history" ? 1 : 0;
+        console.log(OrderService);
+        $rootScope.host = "http://eanet.local.wanda.cn/";
+        // $scope.showHistory = window.location.hash === "#/tab/history" ? 1 : 0;
         $scope.items = [];
+        OrderService.params.showHistory = $scope.tabtype == 2 ? 1 : 0;
+        $scope.active = OrderService.params.ordertype;
+        SwiperService.query(function(data){
+            $scope.list = [];
+            data.forEach(function(item){
+                item.src = $rootScope.host + item.src;
+                $scope.list.push(item);
+            });
+            $ionicSlideBoxDelegate.update();
+        });
         //var url = "/api/items/market?page='+$scope.page+"&count="+$scope.count";
-        HistoryOrderService.params.showHistory = $scope.showHistory;
-        HistoryOrderService.params.ordertype = 1;
-        HistoryOrderService.params.page = 1;
+
+        OrderService.params.page = 1;
         if ($rootScope.user.role_type == 1) {
-            HistoryOrderService.params.type = 2;
+            OrderService.params.type = 2;
         }
         $scope.loadMore = function() {
             $timeout(function() {
-                HistoryOrderService.getList().query(function(res) {
+                OrderService.getList().query(function(res) {
                     $scope.items = $scope.items.concat(res.result);
-                    if (res.result.length < HistoryOrderService.params.count) {
+                    if (res.result.length < OrderService.params.count) {
                         $scope.noMoreItemsAvailable = true;
                     } else {
                         $scope.noMoreItemsAvailable = false;
                     }
-                    HistoryOrderService.params.page++;
+                    OrderService.params.page++;
                 });
                 $scope.$broadcast('scroll.infiniteScrollComplete');
             }, 1000);
 
         };
-
         $scope.doRefresh = function() {
             $timeout(function() {
-                HistoryOrderService.params.page = 1;
-                HistoryOrderService.getList().query(function(res) {
+                OrderService.params.page = 1;
+                OrderService.getList().query(function(res) {
                     $scope.items = res.result;
-                    if (res.result.length < HistoryOrderService.params.count) {
+                    if (res.result.length < OrderService.params.count) {
                         $scope.noMoreItemsAvailable = true;
                     } else {
                         $scope.noMoreItemsAvailable = false;
                     }
-                    HistoryOrderService.params.page++;
+                    OrderService.params.page++;
                 });
                 $scope.$broadcast('scroll.infiniteScrollComplete');
             }, 1000);
             $scope.$broadcast('scroll.refreshComplete');
         }
-
-        HistoryOrderService.getList().query(function(res) {
+        OrderService.getList().query(function(res) {
             // console.log(res);
             $scope.items = $scope.items.concat(res.result);
             console.log($scope.items);
-            if (res.result.length < HistoryOrderService.params.count) {
+            if (res.result.length < OrderService.params.count) {
                 $scope.noMoreItemsAvailable = true;
             } else {
                 $scope.noMoreItemsAvailable = false;
             }
-            HistoryOrderService.params.page++;
+            OrderService.params.page++;
         });
+        $scope.setOrderType = function(type) {
+            OrderService.params.ordertype = type;
+            OrderService.params.page = 1;
+            $scope.active = type;
+            $scope.items = [];
+            OrderService.getList().query(function(res) {
+                // console.log(res);
+                $scope.items = $scope.items.concat(res.result);
+                console.log($scope.items);
+                if (res.result.length < OrderService.params.count) {
+                    $scope.noMoreItemsAvailable = true;
+                } else {
+                    $scope.noMoreItemsAvailable = false;
+                }
+                OrderService.params.page++;
+            });
+        };
         $scope.goto = function(order_id, supplie_id, order_status) {
             $state.go('vieworder', {
                 order_id: order_id,
@@ -1265,8 +1461,135 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                 order_status: order_status
             });
         };
+        $scope.noMoreItemsAvailableItem = false;
+        $scope.vieworder = function(order_id){
+            $scope.market_title = "订单详情";
+            OrderDetailService.params.page = 1;
+            $scope.order_id = order_id;
+            $scope.orderItems = [];
+            OrderDetailService.getList(order_id).query(function(res) {
+                $scope.orderItems = $scope.orderItems.concat(res.result);
+
+                if (res.result.length < OrderDetailService.params.count) {
+                    $scope.noMoreItemsAvailableItem = true;
+                } else {
+                    $scope.noMoreItemsAvailableItem = false;
+                }
+                OrderDetailService.params.page++;
+            });
+            $scope.boxgoto(1);
+        };
+        $scope.noMoreItemsAvailableItem = true;
+        $scope.loadMoreItems = function(){
+            OrderDetailService.getList($scope.order_id).query(function(res) {
+                $scope.orderItems = $scope.orderItems.concat(res.result);
+
+                if (res.result.length < OrderDetailService.params.count) {
+                    $scope.noMoreItemsAvailableItem = true;
+                } else {
+                    $scope.noMoreItemsAvailableItem = false;
+                }
+                OrderDetailService.params.page++;
+            });
+        }
+        $scope.loadMoreRejectDetails = true;
+        $scope.formData = [];
+        $scope.gotoRejectSlide = function(order_id, supplie_id){
+            $scope.market_title="拒收";
+            $scope.rejectItems = [];
+            $scope.companyid = supplie_id;
+            $scope.order_id = order_id;
+            $scope.boxgoto(2);
+            RejectOrderItemService.params.page = 1;
+            RejectOrderItemService.getList(order_id).query(function(res) {
+                $scope.rejectItems = $scope.rejectItems.concat(res.result);
+
+                $scope.formData = [];
+                res.result.forEach(function(item, index) {
+                    $scope.formData.push({
+                        oid: item.oid,
+                        good_reject: item.good_reject,
+                        good_id: item.good_id
+                    });
+                });
+                if (res.result.length < RejectOrderItemService.params.count) {
+                    $scope.loadMoreRejectDetails = true;
+                } else {
+                    $scope.loadMoreRejectDetails = false;
+                }
+                RejectOrderItemService.params.page++;
+            });
+            $scope.$broadcast('scroll.infiniteScrollComplete');
+
+        }
+        $scope.rejectItems = [];
+        $scope.loadMoreRejectItems = function(){
+            RejectOrderItemService.getList($scope.order_id).query(function(res) {
+                $scope.rejectItems = $scope.rejectItems.concat(res.result);
+                if (res.result.length < RejectOrderItemService.params.count) {
+                    $scope.loadMoreRejectDetails = true;
+                } else {
+                    $scope.loadMoreRejectDetails = false;
+                }
+                RejectOrderItemService.params.page++;
+            });
+            $scope.$broadcast('scroll.infiniteScrollComplete');
+        }
+
+
+        $scope.processForm = function() {
+            var oid = [],
+                good_reject = [];
+            $scope.formData.forEach(function(item) {
+                oid.push(item.oid);
+                good_reject.push(item.good_reject);
+            });
+
+            $http.post(host + '/api/order/rejectItems', {
+                orderid: $scope.order_id,
+                good_reject: good_reject.join("|"),
+                oid: oid.join("|")
+            }).success(function(ret) {
+                if (ret.status == 200) {
+                    $ionicLoading.show({
+                        template: '拒收成功，请等待确认',
+                        duration: 2000
+                    });
+                    window.history.back();
+                } else {
+                    $ionicLoading.show({
+                        template: '拒收失败，请刷新页面重试',
+                        duration: 2000
+                    });
+                }
+
+            });
+        };
+        // var Api = $resource('');
+        $scope.noMoreItemsAvailable = false;
+        RejectOrderItemService.params.page = 1;
+        $scope.items = [];
+
+        //var url = "/api/items/market?page='+$scope.page+"&count="+$scope.count";
+
+        $scope.loadMoreDetails = function(){
+            OrderDetailService.getList(order_id).query(function(res) {
+                $scope.orderItems = $scope.orderItems.concat(res.result);
+
+                if (res.result.length < OrderDetailService.params.count) {
+                    $scope.noMoreItemsAvailableItem = true;
+                } else {
+                    $scope.noMoreItemsAvailableItem = false;
+                }
+                OrderDetailService.params.page++;
+            });
+        }
+        $scope.gotoCurrentHome = function(){
+            $scope.market_title = "订单追踪";
+            $scope.boxgoto(0);
+        };
         $scope.del = function(id) {
-            var order = new HistoryOrderService.getList(id);
+            var order = new OrderService.getList(id);
             order.delete(function(ret) {
                 console.log(ret);
                 if (ret.status == 500) {
@@ -1281,10 +1604,13 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     duration: 2000
                 });
                 $scope.doRefresh();
+                // window.location.reload();
             })
         }
         $scope.submitOrder = function(order_id) {
-            $http.post(host + '/api/order/orderSubmit', {
+            console.log($rootScope.user.role_type);
+            var url = $rootScope.user.role_type == 1 ? "/api/order/orderPFSubmit" : "/api/order/orderSubmit";
+            $http.post(host + url, {
                 order_id: order_id
             }).success(function(ret) {
                 if (ret.status == 500) {
@@ -1297,6 +1623,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                         template: '提交订单成功',
                         duration: 2000
                     });
+                    // window.location.reload();
                     $scope.doRefresh();
                 }
             });
@@ -1309,6 +1636,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             // $scope.items = [];
         }
     })
+
     .controller('RejectOrder', function($http, RejectOrderService, $state, $stateParams, $scope, $timeout) {
         $scope.noMoreItemsAvailable = false;
         console.log(RejectOrderService);
@@ -1357,6 +1685,25 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             }
             RejectOrderService.params.page++;
         });
+        $scope.confirmReject = function(order_id) {
+            $http.post(host + '/api/order/rejectOrder', {
+                order_id: order_id
+            }).success(function(ret) {
+                if (ret.status == 200) {
+                    $ionicLoading.show({
+                        template: '确认拒收成功',
+                        duration: 2000
+                    });
+                    window.location.reload();
+                } else {
+                    $ionicLoading.show({
+                        template: '拒收失败，请刷新页面重试',
+                        duration: 2000
+                    });
+                }
+
+            });
+        };
         $scope.setOrderType = function(type) {
             RejectOrderService.params.ordertype = type;
             RejectOrderService.params.page = 1;

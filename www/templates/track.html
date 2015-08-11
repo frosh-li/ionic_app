@@ -1,0 +1,130 @@
+<ion-slide-box delegate-handle="homepage">
+    <ion-slide show-pager=true>
+        <ion-view view-title="订单管理" style="border:none;">
+        <div class="market-header">
+            <!--i class="icon ion-android-arrow-back" ng-click="boxgoto(0)"></i-->
+            <span>{{market_title}}</span>
+        </div>
+
+        <ion-content padding="false">
+            <div class="homepage swiper" style="margin-top:45px;">
+                <ion-slide-box>
+                    <ion-slide ng-repeat="item in list">
+                        <div class="box pink">
+                            <img ng-src="{{item.src}}" class="scale" ng-click="showBigPic(item.src)" />
+                        </div>
+                    </ion-slide>
+                </ion-slide-box>
+            </div>
+            <div class="track-tabs" ng-if="currentOrderStatus != 1">
+                <span ng-class="{'selected':currentOrderStatus == 2}" ng-click="changeTab(0, 2)">已提交</span>
+                <span ng-class="{'selected':currentOrderStatus == 8}" ng-click="changeTab(0, 8)">已确认</span>
+                <span ng-class="{'selected':currentOrderStatus == 4}" ng-click="changeTab(0, 4)">已发货</span>
+                <span ng-class="{'selected':currentOrderStatus == -1}" ng-click="changeTab(1, 4)">拒收历史</span>
+                <span ng-class="{'selected':currentOrderStatus == 5}" ng-click="changeTab(2, 5)">历史订单</span>
+            </div>
+            <ion-refresher
+                pulling-text="下拉刷新"
+                on-refresh="doRefresh()">
+            </ion-refresher>
+            <ion-list>
+                <ion-item ng-repeat="item in items"  ng-if="item.order_status == currentOrderStatus">
+                    <div>
+                    <span class="pull-left">{{ item.order_id }}</span>
+                    <div class="webkitbox">
+                        <div class="">供应商：{{ item.shortname }}</div>
+                        <div class="">创建时间：{{ item.order_date }}</div>
+                    </div>
+                    <div class="webkitbox">
+                        <div class="">订货笔数：<span style="color:#f96">{{ item.itemcount }}</span></div>
+                        <div class="">订单金额：<span  style="color:#c03">{{ item.total_amount }}</span></div>
+                    </div>
+                    <!--span class="pull-right" ng-class="{'calm':item.order_status == 5}">{{item.order_status | orderStatusFilter}}</span-->
+                    <div ng-if="item.order_type == 1">
+                        <a class="button button-positive button-outline button-small " ng-click="vieworder('{{item.order_id}}',{{item.supplie_id}},{{item.order_status}})">查看</a>
+                        <a class="button button-positive button-outline button-small " ng-if="item.order_status == 1 && user.role_type == 2" href="javascript:///;" ng-click="del(item.order_id)">删除</a>
+                        <a class="button button-positive button-outline button-small yellow" ng-if="item.order_status == 1 && user.role_type == 2" href="javascript:///" ng-click="submitOrder(item.order_id)">提交</a>
+                        <a class="button button-positive button-outline button-small yellow" ng-if="item.order_status == 4 && user.role_type == 2" href="javascript:///" ng-click="submitOrder(item.order_id)">收货</a>
+                        <a class="button button-positive button-outline button-small button-reject" ng-if="item.order_status == 5 && item.order_reject == 0 && user.role_type == 2" href="javascript:///;" ng-click="gotoRejectSlide('{{item.order_id}}',item.supplie_id)">拒收</a>
+
+                        <a class="button button-positive button-outline button-small yellow " ng-if="item.order_status == 2 && user.role_type == 1" href="javascript:///" ng-click="submitOrder(item.order_id)">确认订单</a>
+                        <a class="button button-positive button-outline button-small yellow" ng-if="item.order_status == 8 && user.role_type == 1" href="javascript:///" ng-click="submitOrder(item.order_id)">确认发货</a>
+                    </div>
+                    <div ng-if="item.order_type == 2">
+                        <a class="button button-positive button-outline button-small " ng-click="goto('{{item.order_id}}',{{item.supplie_id}},{{item.order_status}})">查看</a>
+                        <a class="button button-positive button-outline button-small " ng-if="item.order_status==1 && user.role_type == 2" href="javascript:///;" ng-click="del(item.order_id)">删除</a>
+                        <a class="button button-positive button-outline button-small " ng-if="item.order_status == 1 && user.role_type == 2" href="javascript:///" ng-click="submitOrder(item.order_id)">询价</a>
+                    </div>
+                    </div>
+                </ion-item>
+                <ion-item ng-repeat="item in items"  ng-if="-1 == currentOrderStatus">
+                    <div>
+                    <span class="pull-left">{{ item.order_id }}</span>
+                    <div class="webkitbox">
+                        <div class="">供应商：{{ item.name }}</div>
+                        <div class="">拒收时间：{{ item.order_lastvaiddate }}</div>
+                    </div>
+                    <div class="webkitbox">
+                        <div class="">拒收数量：<span style="color:#f96">{{ item.order_reject }}</span></div>
+                        <div class="">订单金额：<span  style="color:#c03">{{ item.total_amount }}</span></div>
+                    </div>
+                    <!--span class="pull-right" ng-class="{'calm':item.order_status == 5}">{{item.order_status | orderStatusFilter}}</span-->
+                    <div ng-if="item.order_type == 1">
+                        <a class="button button-positive button-outline button-small " ng-click="vieworder('{{item.order_id}}',{{item.supplie_id}},{{item.order_status}})">查看</a>
+                    </div>
+                    </div>
+                </ion-item>
+            </ion-list>
+            <ion-infinite-scroll ng-if="!noMoreItemsAvailable" on-infinite="loadMore()" distance="10%"></ion-infinite-scroll>
+        </ion-content>
+    </ion-view>
+    </ion-slide>
+    <ion-slide show-pager=true>
+        <ion-view view-title="订单详情" style="border:none;">
+        <div class="market-header">
+            <i class="icon ion-android-arrow-back" ng-click="gotoCurrentHome()"></i>
+            <span>{{market_title}}</span>
+        </div>
+
+        <ion-content padding="false" style="margin-top:45px;">
+            <ion-item ng-repeat="item in orderItems">
+                <div style="color:#f93">编号：{{item.good_id}}</div>
+                <div>品名：{{ item.good_name }}</div>
+                <div>厂家：{{ item.good_cp }}</div>
+                <div>价格：{{ item.good_price }}</div>
+                <div>数量：{{ item.good_number }}</div>
+            </ion-item>
+            <ion-infinite-scroll ng-if="!loadMoreDetails" on-infinite="loadMoreItems()" distance="10%"></ion-infinite-scroll>
+        </ion-content>
+    </ion-view>
+    </ion-slide>
+    <ion-slide show-pager=true>
+        <ion-view view-title="拒收" style="border:none;">
+        <div class="market-header">
+            <i class="icon ion-android-arrow-back" ng-click="gotoCurrentHome()"></i>
+            <span>{{market_title}}</span>
+            <i class="" style="left:auto;right:0" ng-click="processForm()">提交</i>
+        </div>
+
+        <ion-content padding="false" style="margin-top:45px;" class="rejectPage">
+            <ion-item ng-repeat="item in rejectItems">
+                <div style="color:#f93">ID:<span>{{formData[$index].oid}}</span></div>
+                <div>药品ID:<span>{{item.good_id}}</span></div>
+                <div>药品名称:<span>{{item.good_name}}</span></div>
+                <div>药品规格:<span>{{item.good_gg}}</span></div>
+                <div>单位:<span>{{item.good_dw}}</span></div>
+                <div>厂牌:<span>{{item.good_cp}}</span></div>
+                <div>批准文号:<span>{{item.good_pzwh}}</span></div>
+                <div>数量:<span>{{item.good_number}}</span></div>
+                <div>单价:<span>{{item.good_price}}</span></div>
+                <div>总价:<span>{{item.good_amount}}</span></div>
+                <div>
+                    拒收数量:
+                    <input class="" type="text" ng-model="formData[$index].good_reject" style="border:1px solid #ccc;text-align:center;" />
+                </div>
+            </ion-item>
+            <ion-infinite-scroll ng-if="!loadMoreRejectDetails" on-infinite="loadMoreRejectItems()" distance="10%"></ion-infinite-scroll>
+        </ion-content>
+    </ion-view>
+    </ion-slide>
+</ion-slide-box>

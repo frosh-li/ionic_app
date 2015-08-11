@@ -1,0 +1,91 @@
+<ion-slide-box delegate-handle="homepage">
+    <ion-slide show-pager=true>
+        <ion-view view-title="我的">
+            <div class="market-header">
+                <span>{{market_title}}</span>
+            </div>
+            <ion-content padding="false">
+                <div class="homepage swiper" style="margin-top:45px;">
+                    <ion-slide-box>
+                        <ion-slide ng-repeat="item in list">
+                            <div class="box pink">
+                                <img ng-src="{{item.src}}" class="scale" ng-click="showBigPic(item.src)" />
+                            </div>
+                        </ion-slide>
+                    </ion-slide-box>
+
+                </div>
+                <div class="menus memenus">
+                    <!--a href="javascript:///;" ng-click="psearch()">
+                        <i class="m_05" ></i>
+                    </a-->
+                    <a href="javascript:///;">
+                        <i class="m_06" ng-click="gotoPromotion()"></i>
+                    </a>
+                    <a href="javascript:///;">
+                        <i class="m_07" ng-click="gotoFeedback()"></i>
+                    </a>
+                    <a href="javascript:///;">
+                        <i class="m_08" ng-click="gotoAboutUs()"></i>
+                    </a>
+                    <a href="javascript:///;">
+                        <i class="m_09" ng-click="logout()"></i>
+                    </a>
+                </div>
+            </ion-content>
+        </ion-view>
+    </ion-slide>
+    <ion-slide>
+        <ion-view view-title="促销信息">
+            <div class="market-header">
+                    <i class="icon ion-android-arrow-back" ng-click="boxgoto(0)"></i>
+                    <span>{{market_title}}</span>
+                </div>
+            <ion-content padding="false">
+                <div style="margin-top:45px;"></div>
+                <ion-refresher pulling-text="下拉刷新" on-refresh="getPush()">
+                </ion-refresher>
+                <ion-item collection-repeat="item in promotions">
+                    <div>{{ item.title }}</div>
+                    <!--div>{{ item.msg }}</div-->
+                    <div class="calm"></div>
+                    <div class="sub-promotion">
+                        <span style="color:#f93">{{ item.name }}</span>
+                        <span style="color:#CCC;">{{item.create_date|filterDate}}发布</span>
+                    </div>
+                </ion-item>
+            </ion-content>
+        </ion-view>
+    </ion-slide>
+    <ion-slide>
+        <ion-view view-title="关于我们">
+            <div class="market-header">
+                <i class="icon ion-android-arrow-back" ng-click="boxgoto(0)"></i>
+                <span>{{market_title}}</span>
+            </div>
+            <ion-content padding style="padding:10px;">
+                <div style="margin-top:45px;"></div>
+                <div class="about-us">
+                    关于我们的一些纯文字性的介绍
+                </div>
+            </ion-content>
+        </ion-view>
+    </ion-slide>
+    <ion-slide>
+        <ion-view view-title="意见反馈">
+            <div class="market-header">
+                <i class="icon ion-android-arrow-back" ng-click="boxgoto(0)"></i>
+                <span>{{market_title}}</span>
+            </div>
+            <ion-content padding style="padding:10px;">
+                <div style="margin-top:45px;"></div>
+                <div class="feedback">
+                    <textarea placeholder="请输入您的宝贵意见" ng-model="feedbackmsg">{{feedbackmsg}}</textarea>
+                    <button class="button button-light button-block" ng-click="postFeedback(feedbackmsg)">
+                      提交
+                    </button>
+                </div>
+            </ion-content>
+        </ion-view>
+    </ion-slide>
+</ion-slide-box>
