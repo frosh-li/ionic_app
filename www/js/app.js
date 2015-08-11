@@ -1,8 +1,10 @@
 
 var host = "http://101.200.188.188";
-if(window.navigator.appVersion.indexOf('Mac') > -1){
-    host = "http://m.eanet.local.wanda.cn";
-}
+// if(window.navigator.appVersion.indexOf('Mac') > -1){
+//     host = "http://m.eanet.local.wanda.cn";
+// }
+// 
+// host = "http://m.eanet.local.wanda.cn";
 setTimeout(function(){
 
 
@@ -275,7 +277,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
     }
 })
 .config(function($stateProvider, $urlRouterProvider,$ionicConfigProvider, $httpProvider) {
-
+    $httpProvider.defaults.withCredentials = true;
     $httpProvider.defaults.transformRequest = function(data){
         if(typeof data === 'object'){
           var ret = [];
@@ -286,13 +288,14 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
           return ret.join("&");
         }
       };
-      console.log($httpProvider);
+      
       $httpProvider.interceptors.push(function($q){
         return {
           'request': function(config){
             $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
             $httpProvider.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
             /*
+
             $httpProvider.defaults.headers.post['X-TOKEN'] = localStorage.getItem('token');
             $httpProvider.defaults.headers.put['X-TOKEN'] = localStorage.getItem('token');
             $httpProvider.defaults.headers.common['X-TOKEN'] = localStorage.getItem('token');
@@ -367,26 +370,11 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             templateUrl: 'templates/sign-in.html',
             controller: 'SignInCtrl'
         })
-        .state('vieworder', {
-            url: '/vieworder/:order_id/:supplie_id/:order_status',
-            templateUrl: 'templates/vieworder.html',
-            controller: 'ViewOrder',
-            cache: false
-        })
         .state('tabs', {
             url: '/tab',
             abstract: true,
             templateUrl: 'templates/tabs.html',
             controller: "mainCtrl"
-        })
-        .state('tabs.home', {
-            url: '/home',
-            views: {
-                'home-tab': {
-                    templateUrl: 'templates/home.html?' + Date.now(),
-                    controller: 'HomeTabCtrl'
-                }
-            }
         })
         .state('tabs.me', {
             url: '/me',
@@ -395,7 +383,8 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     templateUrl: 'templates/me.html?' + Date.now(),
                     controller: 'MeCtrl'
                 }
-            }
+            },
+            cache: false
         })
         .state('tabs.track', {
             url: '/track',
@@ -404,7 +393,8 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     templateUrl: 'templates/track.html?' + Date.now(),
                     controller: 'TrackCtrl'
                 }
-            }
+            },
+            cache: false
         })
         .state('tabs.submit', {
             url: '/submit',
@@ -413,7 +403,8 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     templateUrl: 'templates/track.html?' + Date.now(),
                     controller: 'TrackCtrl'
                 }
-            }
+            },
+            cache: false
         })
         .state('tabs.homepage', {
             url: '/homepage',
@@ -422,47 +413,10 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     templateUrl: 'templates/homepage.html?' + Date.now(),
                     controller: 'HomepageTabCtrl'
                 }
-            }
-        })
-        .state('tabs.order', {
-            url: '/order',
-            views: {
-                'order-tab': {
-                    templateUrl: 'templates/order.html',
-                    controller: "OrderList"
-                }
-            }
-        })
-        .state('tabs.history', {
-            url: '/history',
-            views: {
-                'history-tab': {
-                    templateUrl: 'templates/history.html',
-                    controller: "HistoryOrderList"
-                }
-            }
-        })
-        .state('rejectOrderItem', {
-            url: '/rejectOrderItem/:order_id/:supplie_id',
-            templateUrl: 'templates/rejectOrderItem.html',
-            controller: "RejectOrderItem"
-        })
-        .state('rejectOrderItemView', {
-            url: '/rejectOrderItemView/:order_id/:supplie_id',
-            templateUrl: 'templates/rejectOrderItemView.html',
-            controller: "RejectOrderItem",
+            },
             cache: false
         })
-        .state('tabs.reject', {
-            url: '/reject',
-            views: {
-                'reject-tab': {
-                    templateUrl: 'templates/reject.html',
-                    controller: "RejectOrder"
-                }
-            }
-
-        })
+        
         .state('tabs.promotion', {
             url: '/promotion',
             views: {
@@ -534,7 +488,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                 console.log($scope.rememberPass);
                 $rootScope.user = res.data;
                 console.log(res.data);
-                $state.go('tabs.home');
+                $state.go('tabs.homepage');
                 /*
                 if (/^1[0-9]{5}$/.test(res.data.comp_id)) {
                     $state.go('tabs.home');
@@ -793,8 +747,8 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
     .controller('HomeTabCtrl', function(CategoryService, $ionicModal, $rootScope, marketList, $scope, $timeout) {
 
     })
-    .controller('HomepageTabCtrl', function($http, CategoryService, $ionicSlideBoxDelegate, $ionicModal, SwiperService, $ionicModal, $rootScope, marketList, $scope, $timeout) {
-        $rootScope.host = "http://eanet.local.wanda.cn/";
+    .controller('HomepageTabCtrl', function($ionicLoading, $http, CategoryService, $ionicSlideBoxDelegate, $ionicModal, SwiperService, $ionicModal, $rootScope, marketList, $scope, $timeout) {
+        $rootScope.host = host + "/";
         $scope.market_title = "药品市场";
         $scope.search = {
             // supplie_id: "",
@@ -804,18 +758,18 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             good_promotion:false
         };
         SwiperService.query(function(data){
-            $scope.list = [];
+            $rootScope.focus = [];
             data.forEach(function(item){
                 item.src = $rootScope.host + item.src;
-                $scope.list.push(item);
+                $rootScope.focus.push(item);
             });
             $ionicSlideBoxDelegate.update();
         });
         SwiperService.query({type: 1}, function(data){
-            $scope.adlist = [];
+            $rootScope.adlist = [];
             data.forEach(function(item){
                 item.src = $rootScope.host + item.src;
-                $scope.adlist.push(item);
+                $rootScope.adlist.push(item);
             });
         });
         $ionicModal.fromTemplateUrl('image-modal.html', {
@@ -864,15 +818,16 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             $ionicSlideBoxDelegate.$getByHandle('homepage').slide(index);
         };
         $scope.gotoCategory = function(){
-            market_title = "药品分类";
+            $scope.market_title = "药品分类";
             $scope.boxgoto(2);
         }
-        $scope.noMoreItemsAvailable = false;
-        console.log(marketList);
+        $scope.noMoreItemsAvailable = true;
+
         $scope.items = [];
         var myNavs = [];
         $scope.navs = "不限";
         //var url = "/api/items/market?page='+$scope.page+"&count="+$scope.count";
+        $scope.hasNoData = false;
         $scope.loadMore = function() {
             $timeout(function() {
                 marketList.getList().query(function(res) {
@@ -882,23 +837,13 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     } else {
                         $scope.noMoreItemsAvailable = false;
                     }
+                    $scope.$broadcast('scroll.infiniteScrollComplete');
                     marketList.params.page++;
                 });
-                $scope.$broadcast('scroll.infiniteScrollComplete');
             }, 1000);
 
         };
-        marketList.getList().query(function(res) {
-            // console.log(res);
-            $scope.items = $scope.items.concat(res.result);
-            console.log($scope.items);
-            if (res.result.length < marketList.params.count) {
-                $scope.noMoreItemsAvailable = true;
-            } else {
-                $scope.noMoreItemsAvailable = false;
-            }
-            marketList.params.page++;
-        });
+     
         $scope.doRefresh = function() {
             $timeout(function() {
                 marketList.params.page = 1;
@@ -917,11 +862,19 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     } else {
                         $scope.noMoreItemsAvailable = false;
                     }
+                    if(res.result.length == 0){
+                        $scope.hasNoData = true;
+                    }else{
+                        $scope.hasNoData = false;
+                    }
                     marketList.params.page++;
+                    $ionicLoading.hide();
+                    $scope.$broadcast('scroll.infiniteScrollComplete');
+                    $scope.$broadcast('scroll.refreshComplete');
                 });
-                $scope.$broadcast('scroll.infiniteScrollComplete');
+            
             }, 1000);
-            $scope.$broadcast('scroll.refreshComplete');
+            
         };
 
         $scope.formData = {};
@@ -1003,6 +956,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     $scope.filterData.category_2 = id;
                     break;
             }
+
             console.log($scope.filterData);
             $scope.page = 1;
             if ($scope.filterData.category_2 > -1) {
@@ -1014,13 +968,24 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             }
             // $scope.catid = $scope.filterData.category_2 || $scope.filterData.category_1 || $scope.filterData.category_0;
             console.log($scope.catid);
-            $scope.doRefresh();
+            if(level == 2){
+                $scope.items = [];
+                $scope.boxgoto(1);
+                $ionicLoading.show({
+                    template: '正在加载'
+                });
+                $scope.doRefresh();
+            }
         }
         $scope.psearch = function(){
             $scope.page = 1;
+
             $scope.doRefresh();
             $scope.items = [];
             $scope.boxgoto(1);
+            $ionicLoading.show({
+                template: '正在加载'
+            });
             $timeout(function(){
                 $scope.search.good_name = "";
             },1000);
@@ -1083,37 +1048,51 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             if(number > 0){
                 //$scope.formData[item_id] = number;
                 $scope.formData[item_id] = "";
-                $http.post('/api/order/master/',{
+                $http.post(host + '/api/order/master/',{
                     supplie_id: supplie_id,
                     good_id: good_id,
                     number: number
                 })
                 .success(function(ret){
                     if(ret.status == 200){
-                        // alert('新增成功');
-                        console.log(ret);
+                        $ionicLoading.show({
+                            template: '添加成功',
+                            duration:2000
+                        });
                     }else{
-                        alert(ret.msg || '未知错误');
+                        $ionicLoading.show({
+                            template: ret.msg || '未知错误',
+                            duration:2000
+                        });
                     }
+                }).complete(function(){
                 })
             }else{
-                alert('请填写购买数量');
+                $ionicLoading.show({
+                    template: '请填写购买数量',
+                    duration:2000
+                });
+
             }
         }
 
     })
-.controller('MeCtrl', function($state, $http, CategoryService, $ionicSlideBoxDelegate, $ionicModal, SwiperService, $ionicModal, $rootScope, marketList, $scope, $timeout) {
-        $rootScope.host = "http://eanet.local.wanda.cn/";
+.controller('MeCtrl', function($state, $http, CategoryService, $ionicSlideBoxDelegate, $ionicModal, SwiperService, $ionicModal, $rootScope, marketList, $scope, $timeout, $ionicLoading) {
+        $rootScope.host = host + "/";
         $scope.promotions = [];
         $timeout(function(){
             $ionicSlideBoxDelegate.$getByHandle('homepage').enableSlide(false);
         },100);
+
         $scope.getPush = function() {
+            $ionicLoading.show({
+                template:"正在加载"
+            });
             $scope.promotions = [];
             $http.get(host + '/api/push/push').success(function(ret) {
                 $scope.promotions = ret;
-
             }).finally(function() {
+                $ionicLoading.hide();
                 $scope.$broadcast('scroll.refreshComplete');
             });
         }
@@ -1126,21 +1105,19 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             good_name: '',
             good_promotion:false
         };
-        SwiperService.query(function(data){
-            $scope.list = [];
-            data.forEach(function(item){
-                item.src = $rootScope.host + item.src;
-                $scope.list.push(item);
-            });
-            $ionicSlideBoxDelegate.update();
-        });
-        SwiperService.query({type: 1}, function(data){
-            $scope.adlist = [];
-            data.forEach(function(item){
-                item.src = $rootScope.host + item.src;
-                $scope.adlist.push(item);
-            });
-        });
+        if($rootScope.focus && $rootScope.focus.length > 0){
+            $scope.list = $rootScope.focus;
+        }else{
+            SwiperService.query(function(data){
+                $scope.list = [];
+                data.forEach(function(item){
+                    item.src = $rootScope.host + item.src;
+                    $scope.list.push(item);
+                });
+                $ionicSlideBoxDelegate.update();
+            });    
+        }
+        
         $ionicModal.fromTemplateUrl('image-modal.html', {
           scope: $scope,
           animation: 'slide-in-up'
@@ -1204,7 +1181,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             $http.post(host + "/api/app/feedback", {
                 feedback: feedbackmsg
             }).success(function(ret) {
-                //$scope.feedbackmsg = "";
+
                 if (ret.status == 500) {
                     $ionicLoading.show({
                         template: ret.err || ret.msg,
@@ -1346,8 +1323,10 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             // $scope.items = [];
         }
     })
-    .controller('TrackCtrl', function(RejectOrderItemService, OrderDetailService, SwiperService,$ionicSlideBoxDelegate, OrderService, $rootScope, $scope, $timeout, $state, $http) {
-        var inSubmit = window.location.hash === "#/tab/submit" ? 1 : 0;
+    .controller('TrackCtrl', function($ionicLoading,RejectOrderItemService, OrderDetailService, SwiperService,$ionicSlideBoxDelegate, OrderService, $rootScope, $scope, $timeout, $state, $http) {
+        var inSubmit = $state.current.name == "tabs.submit" ? 1 : 0;
+        $scope.hasNoData = false;
+        console.log($state);
         $scope.market_title=inSubmit ? "订单提交":"订单追踪";
         $scope.currentOrderStatus = inSubmit ? 1 : 2;
         $scope.tabtype = 0;
@@ -1372,23 +1351,33 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                 OrderService.params.order_status = order_status;
                 OrderService.params.reject = -1;
             }
+            $ionicLoading.show({
+                template:"正在加载"
+            });
             $scope.doRefresh();
         }
         $scope.noMoreItemsAvailable = false;
         console.log(OrderService);
-        $rootScope.host = "http://eanet.local.wanda.cn/";
+        $rootScope.host = host + "/";
         // $scope.showHistory = window.location.hash === "#/tab/history" ? 1 : 0;
         $scope.items = [];
         OrderService.params.showHistory = $scope.tabtype == 2 ? 1 : 0;
         $scope.active = OrderService.params.ordertype;
-        SwiperService.query(function(data){
-            $scope.list = [];
-            data.forEach(function(item){
-                item.src = $rootScope.host + item.src;
-                $scope.list.push(item);
-            });
-            $ionicSlideBoxDelegate.update();
-        });
+        
+
+        if($rootScope.focus && $rootScope.focus.length > 0){
+            $scope.list = $rootScope.focus;
+        }else{
+            SwiperService.query(function(data){
+                $scope.list = [];
+                data.forEach(function(item){
+                    item.src = $rootScope.host + item.src;
+                    $scope.list.push(item);
+                });
+                $ionicSlideBoxDelegate.update();
+            });    
+        }
+
         //var url = "/api/items/market?page='+$scope.page+"&count="+$scope.count";
 
         OrderService.params.page = 1;
@@ -1420,23 +1409,21 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     } else {
                         $scope.noMoreItemsAvailable = false;
                     }
+                    if($scope.items.length == 0){
+                        $scope.hasNoData = true;
+                    }else{
+                        $scope.hasNoData = false;
+                    }
                     OrderService.params.page++;
+                    $ionicLoading.hide();
+                    $scope.$broadcast('scroll.infiniteScrollComplete');
+                    $scope.$broadcast('scroll.refreshComplete');
+                    
                 });
-                $scope.$broadcast('scroll.infiniteScrollComplete');
             }, 1000);
-            $scope.$broadcast('scroll.refreshComplete');
+            
         }
-        OrderService.getList().query(function(res) {
-            // console.log(res);
-            $scope.items = $scope.items.concat(res.result);
-            console.log($scope.items);
-            if (res.result.length < OrderService.params.count) {
-                $scope.noMoreItemsAvailable = true;
-            } else {
-                $scope.noMoreItemsAvailable = false;
-            }
-            OrderService.params.page++;
-        });
+        $scope.doRefresh();
         $scope.setOrderType = function(type) {
             OrderService.params.ordertype = type;
             OrderService.params.page = 1;

@@ -9,7 +9,7 @@
             <ion-content padding="false">
                 <div class="homepage swiper">
                     <ion-slide-box>
-                        <ion-slide ng-repeat="item in list">
+                        <ion-slide ng-repeat="item in focus">
                             <div class="box pink">
                                 <img ng-src="{{item.src}}" class="scale" ng-click="showBigPic(item.src)" />
                             </div>
@@ -18,7 +18,7 @@
 
                 </div>
                 <div class="menus">
-                    <a href="javascript:///;" ng-click="psearch()">
+                    <a href="javascript:///;" ng-click="gotoCategory()">
                         <i class="m_01"></i>
                     </a>
                     <a href="#">
@@ -68,25 +68,7 @@
                     <span>{{market_title}}</span>
                 </div>
             <ion-content padding="false">
-
                 <div style="margin-top:45px;"></div>
-                <!--
-                <div class="row nav calm" padding>
-                    当前分类：{{navs}}
-                </div>
-
-                <div class="currentBtn clearfix">
-                    <a class='button button-calm' href="javascript:///;" ng-click="changeCat(0, -1)" ng-class="{'active':-1==filterData.category_0}">不限</a>
-                    <a ng-repeat="cats in categories.data" class='button button-calm' ng-class="{'active':cats.id==filterData.category_0}" href="javascript:///;" ng-click="changeCat(0, cats.id)">{{cats.name}}</a>
-                </div>
-                <div class="currentBtn clearfix">
-                    <a ng-repeat="cats in categories_1" class='button button-calm' ng-class="{'active':cats.id==filterData.category_1}" href="javascript:///;" ng-click="changeCat(1, cats.id)" ng-class="cats.id==filterData.category_1">{{cats.name}}</a>
-                </div>
-                <div class="currentBtn clearfix">
-                    <a ng-repeat="cats in categories_2" class='button button-calm' ng-class="{'active':cats.id==filterData.category_2}" href="javascript:///;" ng-click="changeCat(2, cats.id)">{{cats.name}}</a>
-
-                </div>
-                -->
                 <ion-refresher pulling-text="下拉刷新" on-refresh="doRefresh()">
                 </ion-refresher>
                 <div class="list" padding>
@@ -112,6 +94,9 @@
                             </div>
                         </div>
                     </div>
+                    <div ng-if="hasNoData" class="emptydata">
+                        暂无数据
+                    </div>
                 </div>
                 <ion-infinite-scroll ng-if="!noMoreItemsAvailable" on-infinite="loadMore()" distance="10%"></ion-infinite-scroll>
             </ion-content>
@@ -134,7 +119,7 @@
                         <div class="" ng-repeat = "cats in categories_1">
                             <div class="subtitle">{{cats.name}}</div>
                             <ul class="clearfix">
-                                <li ng-repeat="icat in cats.children">
+                                <li ng-repeat="icat in cats.children" ng-click="changeCat(2, icat.id)">
                                     <img ng-src="{{host}}/static/cats/cat_{{icat.id}}.png" />
                                     <span>{{icat.name}}</span>
                                 </li>
