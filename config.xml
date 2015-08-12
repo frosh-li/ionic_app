@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="com.lijunliang.meanet" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>meanet</name>
+  <name>eYao</name>
   <description>
-        An Ionic Framework and Cordova project.
+        eYao.
     </description>
   <author email="hi@ionicframework" href="http://ionicframework.com/">
       Ionic Framework Team
@@ -21,10 +21,10 @@
   </feature>
   <platform name="ios">
     <icon src="resources/ios/icon/icon.png" />
-    <splash src="resources/ios/splash/iphone.png" />
+    <splash src="resources/ios/splash/splash.png" />
   </platform>
   <platform name="android">
     <icon src="resources/android/icon/icon.png" />
-    <splash src="resources/android/splash/iphone.png" density="land-ldpi"/>
+    <splash src="resources/android/splash/splash.png" />
   </platform>
 </widget>
