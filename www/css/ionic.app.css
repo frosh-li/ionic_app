@@ -2769,6 +2769,7 @@ ion-infinite-scroll {
   position: absolute;
   display: block;
   width: 100%;
+  padding-top:20px;
   height: 100%; }
 
 /**
