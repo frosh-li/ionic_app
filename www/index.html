@@ -8,7 +8,7 @@
 
     <link href="css/ionic.app.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
-
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
@@ -18,8 +18,8 @@
 
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
-    <!--script src="device.js"></script-->
-    <!--script src="js/JPushPlugin.js"></script-->
+    <script src="js/device.js"></script>
+    <script src="js/JPushPlugin.js"></script>
     <script src="lib/ionic/js/angular/angular-resource.min.js"></script>
     <!-- your app's js -->
     <script src="js/filter.js"></script>

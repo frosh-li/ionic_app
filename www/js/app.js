@@ -3,11 +3,11 @@ var host = "http://101.200.188.188";
 // if(window.navigator.appVersion.indexOf('Mac') > -1){
 //     host = "http://m.eanet.local.wanda.cn";
 // }
-// 
+//
 // host = "http://m.eanet.local.wanda.cn";
-setTimeout(function(){
+//setTimeout(function(){
 
-
+/*
 if(window.plugins && typeof device !== undefined){
     window.plugins.jPushPlugin.init();
     var onDeviceReady   = function(){
@@ -30,7 +30,7 @@ if(window.plugins && typeof device !== undefined){
                 var result="result code:"+event.resultCode+" ";
                 result+="tags:"+event.tags+" ";
                 result+="alias:"+event.alias+" ";
-                $("#tagAliasResult").html(result);
+                console.log(result);
             }
             catch(exception){
                 console.log(exception)
@@ -59,7 +59,7 @@ if(window.plugins && typeof device !== undefined){
                 }else{
                      alert   = event.aps.alert;
                 }
-                $("#notificationResult").html(alert);
+                console.log(alert);
 
             }
             catch(exeption){
@@ -137,6 +137,7 @@ if(window.plugins && typeof device !== undefined){
 }
 
 },2000);
+*/
 angular.module('locals',[])
 .factory('ls', function($window) {
   return {
@@ -169,7 +170,8 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             // org.apache.cordova.statusbar required
             StatusBar.styleDefault();
         }
-
+        window.plugins.jPushPlugin.init();
+        window.plugins.jPushPlugin.setDebugMode(true);
         //检测更新
         checkUpdate();
 
@@ -288,7 +290,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
           return ret.join("&");
         }
       };
-      
+
       $httpProvider.interceptors.push(function($q){
         return {
           'request': function(config){
@@ -380,7 +382,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             url: '/me',
             views: {
                 'me-tab': {
-                    templateUrl: 'templates/me.html?' + Date.now(),
+                    templateUrl: 'templates/me.html',
                     controller: 'MeCtrl'
                 }
             },
@@ -390,7 +392,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             url: '/track',
             views: {
                 'track-tab': {
-                    templateUrl: 'templates/track.html?' + Date.now(),
+                    templateUrl: 'templates/track.html',
                     controller: 'TrackCtrl'
                 }
             },
@@ -400,7 +402,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             url: '/submit',
             views: {
                 'submit-tab': {
-                    templateUrl: 'templates/track.html?' + Date.now(),
+                    templateUrl: 'templates/track.html',
                     controller: 'TrackCtrl'
                 }
             },
@@ -410,13 +412,13 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             url: '/homepage',
             views: {
                 'homepage-tab': {
-                    templateUrl: 'templates/homepage.html?' + Date.now(),
+                    templateUrl: 'templates/homepage.html',
                     controller: 'HomepageTabCtrl'
                 }
             },
             cache: false
         })
-        
+
         .state('tabs.promotion', {
             url: '/promotion',
             views: {
@@ -479,6 +481,9 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
         } else {
             ls.set('rememberPass', 'false');
         }
+        $ionicLoading.show({
+            template: '登录中'
+        });
         $http.post(host + '/api/user/login', user).then(function(res) {
             console.log(res);
             if (res.data.status === 200) {
@@ -489,17 +494,6 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                 $rootScope.user = res.data;
                 console.log(res.data);
                 $state.go('tabs.homepage');
-                /*
-                if (/^1[0-9]{5}$/.test(res.data.comp_id)) {
-                    $state.go('tabs.home');
-                } else {
-                    $ionicLoading.show({
-    template: '登录失败，非药店账号',
-    duration:2000
-});
-                }
-                */
-
             } else {
                 $ionicLoading.show({
                     template: '登录失败',
@@ -509,6 +503,8 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
 
         }, function(err) {
             console.log(err);
+        }).finally(function(){
+            $ionicLoading.hide();
         });
 
     };
@@ -843,7 +839,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             }, 1000);
 
         };
-     
+
         $scope.doRefresh = function() {
             $timeout(function() {
                 marketList.params.page = 1;
@@ -872,9 +868,9 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     $scope.$broadcast('scroll.infiniteScrollComplete');
                     $scope.$broadcast('scroll.refreshComplete');
                 });
-            
+
             }, 1000);
-            
+
         };
 
         $scope.formData = {};
@@ -969,19 +965,29 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             // $scope.catid = $scope.filterData.category_2 || $scope.filterData.category_1 || $scope.filterData.category_0;
             console.log($scope.catid);
             if(level == 2){
+                $scope.parentPage = "category";
                 $scope.items = [];
                 $scope.boxgoto(1);
                 $ionicLoading.show({
                     template: '正在加载'
                 });
                 $scope.doRefresh();
+                $scope.market_title = "药品市场";
+            }
+        }
+        $scope.gotoParent = function(){
+            if($scope.parentPage == "search"){
+                $scope.boxgoto(0);
+            }else{
+                $scope.gotoCategory();
             }
         }
         $scope.psearch = function(){
             $scope.page = 1;
-
+            $scope.parentPage = "search";
             $scope.doRefresh();
             $scope.items = [];
+            $scope.market_title = "搜索结果";
             $scope.boxgoto(1);
             $ionicLoading.show({
                 template: '正在加载'
@@ -1115,9 +1121,9 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     $scope.list.push(item);
                 });
                 $ionicSlideBoxDelegate.update();
-            });    
+            });
         }
-        
+
         $ionicModal.fromTemplateUrl('image-modal.html', {
           scope: $scope,
           animation: 'slide-in-up'
@@ -1197,132 +1203,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             });
         }
     })
-    .controller('OrderList', function(OrderService, $rootScope, $scope, $timeout, $state, $http) {
-        $scope.noMoreItemsAvailable = false;
-        console.log(OrderService);
-        $scope.showHistory = window.location.hash === "#/tab/history" ? 1 : 0;
-        $scope.items = [];
-        $scope.active = OrderService.params.ordertype;
-        //var url = "/api/items/market?page='+$scope.page+"&count="+$scope.count";
-        OrderService.params.showHistory = $scope.showHistory;
-        OrderService.params.page = 1;
-        if ($rootScope.user.role_type == 1) {
-            OrderService.params.type = 2;
-        }
-        $scope.loadMore = function() {
-            $timeout(function() {
-                OrderService.getList().query(function(res) {
-                    $scope.items = $scope.items.concat(res.result);
-                    if (res.result.length < OrderService.params.count) {
-                        $scope.noMoreItemsAvailable = true;
-                    } else {
-                        $scope.noMoreItemsAvailable = false;
-                    }
-                    OrderService.params.page++;
-                });
-                $scope.$broadcast('scroll.infiniteScrollComplete');
-            }, 1000);
 
-        };
-        $scope.doRefresh = function() {
-            $timeout(function() {
-                OrderService.params.page = 1;
-                OrderService.getList().query(function(res) {
-                    $scope.items = res.result;
-                    if (res.result.length < OrderService.params.count) {
-                        $scope.noMoreItemsAvailable = true;
-                    } else {
-                        $scope.noMoreItemsAvailable = false;
-                    }
-                    OrderService.params.page++;
-                });
-                $scope.$broadcast('scroll.infiniteScrollComplete');
-            }, 1000);
-            $scope.$broadcast('scroll.refreshComplete');
-        }
-        OrderService.getList().query(function(res) {
-            // console.log(res);
-            $scope.items = $scope.items.concat(res.result);
-            console.log($scope.items);
-            if (res.result.length < OrderService.params.count) {
-                $scope.noMoreItemsAvailable = true;
-            } else {
-                $scope.noMoreItemsAvailable = false;
-            }
-            OrderService.params.page++;
-        });
-        $scope.setOrderType = function(type) {
-            OrderService.params.ordertype = type;
-            OrderService.params.page = 1;
-            $scope.active = type;
-            $scope.items = [];
-            OrderService.getList().query(function(res) {
-                // console.log(res);
-                $scope.items = $scope.items.concat(res.result);
-                console.log($scope.items);
-                if (res.result.length < OrderService.params.count) {
-                    $scope.noMoreItemsAvailable = true;
-                } else {
-                    $scope.noMoreItemsAvailable = false;
-                }
-                OrderService.params.page++;
-            });
-        };
-        $scope.goto = function(order_id, supplie_id, order_status) {
-            $state.go('vieworder', {
-                order_id: order_id,
-                supplie_id: supplie_id,
-                order_status: order_status
-            });
-        };
-        $scope.del = function(id) {
-            var order = new OrderService.getList(id);
-            order.delete(function(ret) {
-                console.log(ret);
-                if (ret.status == 500) {
-                    $ionicLoading.show({
-                        template: '系统错误' + "\n" + ret.err,
-                        duration: 2000
-                    });
-                    return;
-                }
-                $ionicLoading.show({
-                    template: '删除成功',
-                    duration: 2000
-                });
-                $scope.doRefresh();
-                // window.location.reload();
-            })
-        }
-        $scope.submitOrder = function(order_id) {
-            console.log($rootScope.user.role_type);
-            var url = $rootScope.user.role_type == 1 ? "/api/order/orderPFSubmit" : "/api/order/orderSubmit";
-            $http.post(host + url, {
-                order_id: order_id
-            }).success(function(ret) {
-                if (ret.status == 500) {
-                    $ionicLoading.show({
-                        template: ret.err || ret.msg,
-                        duration: 2000
-                    });
-                } else if (ret.status == 200) {
-                    $ionicLoading.show({
-                        template: '提交订单成功',
-                        duration: 2000
-                    });
-                    // window.location.reload();
-                    $scope.doRefresh();
-                }
-            });
-        }
-        $scope.gotoReject = function(order_id, supplie_id) {
-            $state.go('rejectOrderItem', {
-                order_id: order_id,
-                supplie_id: supplie_id
-            });
-            // $scope.items = [];
-        }
-    })
     .controller('TrackCtrl', function($ionicLoading,RejectOrderItemService, OrderDetailService, SwiperService,$ionicSlideBoxDelegate, OrderService, $rootScope, $scope, $timeout, $state, $http) {
         var inSubmit = $state.current.name == "tabs.submit" ? 1 : 0;
         $scope.hasNoData = false;
@@ -1336,6 +1217,9 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
         $scope.boxgoto = function(index){
             $ionicSlideBoxDelegate.$getByHandle('homepage').slide(index);
         };
+        $ionicLoading.show({
+            template: '正在加载'
+        });
         OrderService.params.order_status = $scope.currentOrderStatus;
         $scope.changeTab = function(type, order_status){
             if(type == 1){
@@ -1363,7 +1247,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
         $scope.items = [];
         OrderService.params.showHistory = $scope.tabtype == 2 ? 1 : 0;
         $scope.active = OrderService.params.ordertype;
-        
+
 
         if($rootScope.focus && $rootScope.focus.length > 0){
             $scope.list = $rootScope.focus;
@@ -1375,7 +1259,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     $scope.list.push(item);
                 });
                 $ionicSlideBoxDelegate.update();
-            });    
+            });
         }
 
         //var url = "/api/items/market?page='+$scope.page+"&count="+$scope.count";
@@ -1394,8 +1278,8 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                         $scope.noMoreItemsAvailable = false;
                     }
                     OrderService.params.page++;
+                    $scope.$broadcast('scroll.infiniteScrollComplete');
                 });
-                $scope.$broadcast('scroll.infiniteScrollComplete');
             }, 1000);
 
         };
@@ -1418,10 +1302,10 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     $ionicLoading.hide();
                     $scope.$broadcast('scroll.infiniteScrollComplete');
                     $scope.$broadcast('scroll.refreshComplete');
-                    
+
                 });
             }, 1000);
-            
+
         }
         $scope.doRefresh();
         $scope.setOrderType = function(type) {
@@ -1863,6 +1747,4 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
         }
         $scope.getPush();
 
-    })
-
-;
+    });

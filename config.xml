@@ -27,4 +27,8 @@
     <icon src="resources/android/icon/icon.png" />
     <splash src="resources/android/splash/splash.png" />
   </platform>
+  <feature name="JPushPlugin">
+    <param name="ios-package" value="JPushPlugin" />
+    <param name="onload" value="true" />
+</feature>
 </widget>

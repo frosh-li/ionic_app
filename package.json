@@ -15,14 +15,12 @@
     "shelljs": "^0.3.0"
   },
   "cordovaPlugins": [
-    {
-      "locator": "/opt/jpush-phonegap-plugin",
-      "id": "cn.jpush.phonegap.JPushPlugin"
-    },
     "cordova-plugin-splashscreen",
-    "cordova-plugin-whitelist"
+    "cordova-plugin-whitelist",
+    "org.apache.cordova.device"
   ],
   "cordovaPlatforms": [
-    "android"
+    "android",
+    "ios"
   ]
 }

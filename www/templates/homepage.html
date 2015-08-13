@@ -64,7 +64,7 @@
     <ion-slide>
         <ion-view view-title="药品市场">
             <div class="market-header">
-                    <i class="icon ion-android-arrow-back" ng-click="boxgoto(0)"></i>
+                    <i class="icon ion-android-arrow-back" ng-click="gotoParent()"></i>
                     <span>{{market_title}}</span>
                 </div>
             <ion-content padding="false">
@@ -120,7 +120,7 @@
                             <div class="subtitle">{{cats.name}}</div>
                             <ul class="clearfix">
                                 <li ng-repeat="icat in cats.children" ng-click="changeCat(2, icat.id)">
-                                    <img ng-src="{{host}}/static/cats/cat_{{icat.id}}.png" />
+                                    <img ng-src="{{host}}/static/cats/{{icat.icon}}" />
                                     <span>{{icat.name}}</span>
                                 </li>
                             </ul>
