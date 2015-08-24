@@ -3,7 +3,7 @@
         <ion-view view-title="首页">
             <div class="searchheader">
                 <i class="icon ion-eye" ng-click="gotoCategory()"></i>
-                <input type="text" ng-model="search.good_name" placeholder="品名" />
+                <input type="text" ng-model="search.good_name" placeholder="搜索品名、拼音简写" />
                 <i class="icon ion-search" ng-click="psearch()" ></i>
             </div>
             <ion-content padding="false">
@@ -11,7 +11,7 @@
                     <ion-slide-box>
                         <ion-slide ng-repeat="item in focus">
                             <div class="box pink">
-                                <img ng-src="{{item.src}}" class="scale" ng-click="showBigPic(item.src)" />
+                                <img src="img/scroll.png" ng-src="{{item.src}}" class="scale" ng-click="showBigPic(item.src)" />
                             </div>
                         </ion-slide>
                     </ion-slide-box>
@@ -21,7 +21,7 @@
                     <a href="javascript:///;" ng-click="gotoCategory()">
                         <i class="m_01"></i>
                     </a>
-                    <a href="#">
+                    <a href="#" ng-click="gotoNewOrder()">
                         <i class="m_02"></i>
                     </a>
                     <a href="#">
@@ -129,6 +129,65 @@
                 </div>
 
 
+            </ion-content>
+        </ion-view>
+    </ion-slide>
+    <ion-slide>
+        <ion-view view-title="填写订单">
+            <div class="market-header">
+                <i class="icon ion-android-arrow-back" ng-click="boxgoto(0)"></i>
+                <span>{{market_title}}</span>
+            </div>
+            <ion-content>
+                <div style="margin-top:45px;"></div>
+                <div class="list">
+                  <label class="item item-input">
+                    <span class="input-label">供货商</span>
+                    <input readonly="" ng-click="gotoSearchSupplie()" type="text" placeholder="点击选择供货商" ng-model="neworder.supplie_name">
+                  </label>
+                  <label class="item item-input">
+                    <span class="input-label">订货人</span>
+                    <input type="text" readonly placeholder="" ng-model="neworder.order_oper">
+                  </label>
+                  <label class="item item-input">
+                    <span class="input-label">订单备注</span>
+                    <input type="text" placeholder="" ng-model="neworder.order_beizu">
+                  </label>
+                  <label class="item item-input">
+                    <span class="input-label">订单日期</span>
+                    <input type="text" placeholder="" ng-model="neworder.order_date">
+                  </label>
+                  <label class="item item-input hide">
+                    <span class="input-label">订单类型</span>
+                    <input type="text" readonly placeholder="" ng-model="neworder.order_type">
+                  </label>
+                  <label class="item item-input">
+                    <span class="input-label">企业编号</span>
+                    <input type="text" readonly placeholder="" ng-model="neworder.comp_id">
+                  </label>
+                </div>
+                <div class="padding feedback"  ng-click="processForm()">
+                    <button class="button button-block button-light">提交</button>
+                </div>
+            </ion-content>
+        </ion-view>
+    </ion-slide>
+    <ion-slide>
+        <ion-view view-title="选择企业">
+            <ion-content>
+                <div class="list">
+                  <div class="item item-input-inset" style="border-top:none;">
+                    <label class="item-input-wrapper">
+                      <input type="text" placeholder="输入企业拼音搜索" ng-model="query.key">
+                    </label>
+                    <button class="button button-small" ng-click="SearchComp()">
+                      确认
+                    </button>
+                  </div>
+                  <div class="item" ng-repeat="item in suggest_comp_list" ng-click="selectCompany(item.id, item.name)">
+                        {{item.id}} {{item.name}}
+                  </div>
+                </div>
             </ion-content>
         </ion-view>
     </ion-slide>

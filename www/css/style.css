@@ -179,6 +179,7 @@ html .clearfix {display: block;}
 .menus.memenus{
 	margin-top:10px;
 	display: -webkit-box;
+	text-align: left;
 }
 .menus.memenus > a i{
 	width: 4.7rem;

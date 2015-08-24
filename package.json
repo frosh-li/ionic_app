@@ -15,8 +15,8 @@
     "shelljs": "^0.3.0"
   },
   "cordovaPlugins": [
-    "cordova-plugin-splashscreen",
     "cordova-plugin-whitelist",
+    "cordova-plugin-crosswalk-webview",
     "org.apache.cordova.device"
   ],
   "cordovaPlatforms": [

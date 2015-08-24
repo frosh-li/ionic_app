@@ -8,7 +8,8 @@
 
     <link href="css/ionic.app.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'" />
+    <meta content="telephone=no" name="format-detection" />
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
@@ -49,7 +50,9 @@
                 <ion-tab title="提交" icon="ion-document" href="#/tab/submit">
                     <ion-nav-view name="submit-tab"></ion-nav-view>
                 </ion-tab>
-
+                <ion-tab title="促销" icon="ion-document" href="#/tab/promotion">
+                    <ion-nav-view name="promotion-tab"></ion-nav-view>
+                </ion-tab>
                 <ion-tab title="我的" icon="ion-person" href="#/tab/me">
                     <ion-nav-view name="me-tab"></ion-nav-view>
                 </ion-tab>

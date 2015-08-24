@@ -1,16 +1,27 @@
-<ion-view view-title="促销">
-    <ion-content padding="false">
-    	<ion-refresher
-            pulling-text="下拉刷新"
-            on-refresh="getPush()">
-        </ion-refresher>
-        <ion-list>
-            <ion-item collection-repeat="item in list">
-                <div>{{ item.title }}</div>
-                <div>{{ item.msg }}</div>
-                <div class="calm">{{ item.name }}</div>
-                <div class="positive">{{item.create_date|filterDate}}发布</div>
-            </ion-item>
-        </ion-list>
-    </ion-content>
-</ion-view>
+<ion-slide-box delegate-handle="homepage">
+    <ion-slide show-pager=true>
+
+        <ion-view view-title="促销">
+            <div class="market-header">
+                <span>促销信息</span>
+            </div>
+            <ion-content padding="false">
+                <div style="margin-top:45px;"></div>
+            	<ion-refresher
+                    pulling-text="下拉刷新"
+                    on-refresh="getPush()">
+                </ion-refresher>
+                <ion-list>
+                    <div ng-repeat="item in list" style="padding:10px;border-bottom:1px solid #ccc;">
+                            <div class="calm" style="color:#999">{{ item.title }}</div>
+                            <p style="white-space: inherit;">{{ item.msg }}</p>
+                            <div class="sub-promotion">
+                                <span style="color:#f93">{{ item.name }}</span>
+                                <span style="color:#CCC;">{{item.create_date|filterDate}}发布</span>
+                            </div>
+                        </div>
+                </ion-list>
+            </ion-content>
+        </ion-view>
+    </ion-slide>
+</ion-slide-box>

@@ -4,13 +4,66 @@ var host = "http://101.200.188.188";
 //     host = "http://m.eanet.local.wanda.cn";
 // }
 //
-// host = "http://m.eanet.local.wanda.cn";
-//setTimeout(function(){
+Date.prototype.Format = function (fmt) { //author: meizz
+    var o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "h+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        "S": this.getMilliseconds() //毫秒
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+};
 
-/*
-if(window.plugins && typeof device !== undefined){
-    window.plugins.jPushPlugin.init();
-    var onDeviceReady   = function(){
+// host = "http://m.eanet.local.wanda.cn";
+
+var appVersion = "1.0.2";
+
+angular.module('locals',[])
+.factory('ls', function($window) {
+  return {
+    set: function(key, value) {
+      $window.localStorage[key] = value;
+    },
+    get: function(key, defaultValue) {
+      return $window.localStorage[key] || defaultValue;
+    },
+    setObject: function(key, value) {
+      $window.localStorage[key] = JSON.stringify(value);
+    },
+    getObject: function(key) {
+      return JSON.parse($window.localStorage[key] || '{}');
+    }
+  }
+});
+var fromNotice = false;
+// document.addEventListener("deviceready", onDeviceReady, false);
+angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
+.run(function ($state, $http, $ionicPlatform,ls, $rootScope,$ionicActionSheet, $timeout, $ionicPopup, $ionicLoading) {
+    $rootScope.user = ls.getObject('user');
+    fromNotice = false;
+    $ionicPlatform.ready(function ($rootScope) {
+        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+        // for form inputs)
+        if (window.cordova && window.cordova.plugins.Keyboard) {
+            cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+        }
+        if (window.StatusBar) {
+            // org.apache.cordova.statusbar required
+            StatusBar.styleDefault();
+        }
+        window.plugins.jPushPlugin.init();
+        window.plugins.jPushPlugin.setDebugMode(false);
+        //检测更新
+        checkUpdate();
+
+        document.addEventListener("menubutton", onHardwareMenuKeyDown, false);
+        var onDeviceReady   = function(){
             console.log("JPushPlugin:Device ready!")
             initiateUI();
         }
@@ -38,14 +91,8 @@ if(window.plugins && typeof device !== undefined){
         }
         var onOpenNotification = function(event){
             try{
-                var alertContent
-                if(device.platform == "Android"){
-                    alertContent=window.plugins.jPushPlugin.openNotification.alert;
-                }else{
-                    alertContent   = event.aps.alert;
-                }
-                alert("open Notificaiton:"+alertContent);
-
+                fromNotice = true;
+                $state.go('tabs.promotion');
             }
             catch(exception){
                 console.log("JPushPlugin:onOpenNotification"+exception);
@@ -94,88 +141,18 @@ if(window.plugins && typeof device !== undefined){
                     window.plugins.jPushPlugin.setDebugModeFromIos();
                     window.plugins.jPushPlugin.setApplicationIconBadgeNumber(0);
                 }else{
-                    window.plugins.jPushPlugin.setDebugMode(true);
+                    // window.plugins.jPushPlugin.setDebugMode(false);
                 }
             }
             catch(exception){
                 console.log(exception);
             }
-           $("#setTagWithAliasButton").click(function(ev) {
-                try{
-                    var tag1 = $("#tagText1").attr("value");
-                    var tag2 = $("#tagText2").attr("value");
-                    var tag3 = $("#tagText3").attr("value");
-                    var alias = $("#aliasText").attr("value");
-                    var dd = [];
-
-                    if(tag1==""&&tag2==""&&tag3==""){
-                    }
-                    else{
-                        if(tag1 != ""){
-                            dd.push(tag1);
-                        }
-                        if(tag2 != ""){
-                            dd.push(tag2);
-                        }
-                        if(tag3 != ""){
-                            dd.push(tag3);
-                        }
-                    }
-                    window.plugins.jPushPlugin.setTagsWithAlias(dd,alias);
-
-                }
-                catch(exception){
-                    console.log(exception);
-                }
-            })
         }
         document.addEventListener("jpush.setTagsWithAlias", onTagsWithAlias, false);
         document.addEventListener("deviceready", onDeviceReady, false);
         document.addEventListener("jpush.openNotification", onOpenNotification, false);
         document.addEventListener("jpush.receiveNotification", onReceiveNotification, false);
         document.addEventListener("jpush.receiveMessage", onReceiveMessage, false);
-}
-
-},2000);
-*/
-angular.module('locals',[])
-.factory('ls', function($window) {
-  return {
-    set: function(key, value) {
-      $window.localStorage[key] = value;
-    },
-    get: function(key, defaultValue) {
-      return $window.localStorage[key] || defaultValue;
-    },
-    setObject: function(key, value) {
-      $window.localStorage[key] = JSON.stringify(value);
-    },
-    getObject: function(key) {
-      return JSON.parse($window.localStorage[key] || '{}');
-    }
-  }
-});
-
-// document.addEventListener("deviceready", onDeviceReady, false);
-angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
-.run(function ($http, $ionicPlatform,ls, $rootScope,$ionicActionSheet, $timeout, $ionicPopup, $ionicLoading) {
-    $rootScope.user = ls.getObject('user');
-    $ionicPlatform.ready(function ($rootScope) {
-        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-        // for form inputs)
-        if (window.cordova && window.cordova.plugins.Keyboard) {
-            cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-        }
-        if (window.StatusBar) {
-            // org.apache.cordova.statusbar required
-            StatusBar.styleDefault();
-        }
-        window.plugins.jPushPlugin.init();
-        window.plugins.jPushPlugin.setDebugMode(true);
-        //检测更新
-        checkUpdate();
-
-        document.addEventListener("menubutton", onHardwareMenuKeyDown, false);
     });
 
 
@@ -209,74 +186,26 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
         $http.get(host+'/api/app/getVersion').success(function(data){
             var serverAppVersion = data.version; //从服务端获取最新版本
             //获取版本
-            console.log(serverAppVersion);
-            if(serverAppVersion != '0.0.1'){
-                $ionicLoading.show({
-                    template: "请先更新程序"
-                });
-                window.location.href="itms-services://?action=download-manifest&url=https%3A%2F%2Fwww.pgyer.com%2Fapiv1%2Fapp%2Fplist%3FaId%3Db7918385428a4ae687bbcb0e05bd86ac%26_api_key%3D1fe17f04dfd977b9009cab3ef9ef8442";
-                $timeout(function(){
-                    $ionicLoading.hide();
-                },2000);
-            }
 
-
+                //如果本地与服务端的APP版本不符合
+                console.log(serverAppVersion, appVersion);
+                if(serverAppVersion != appVersion && serverAppVersion != ""){
+                    $ionicLoading.show({
+                        template: "请先更新程序"
+                    });
+                    var updateurl = window.navigator.appVersion.indexOf('Android') > -1 ?
+                        "http://www.pgyer.com/apiv1/app/install?aId=1be7dff13f4dcb8a7054f9fb26cc3db4&_api_key=1fe17f04dfd977b9009cab3ef9ef8442":"itms-services://?action=download-manifest&url=https%3A%2F%2Fwww.pgyer.com%2Fapiv1%2Fapp%2Fplist%3FaId%3Dea23830af528d106945ada881d549b37%26_api_key%3D1fe17f04dfd977b9009cab3ef9ef8442";
+                    window.location.href=updateurl;
+                    $timeout(function(){
+                        $ionicLoading.hide();
+                    },2000);
+                }
 
 
         })
 
     }
-
-    // 显示是否更新对话框
-    function showUpdateConfirm() {
-        var confirmPopup = $ionicPopup.confirm({
-            title: '版本升级',
-            template: '1.xxxx;</br>2.xxxxxx;</br>3.xxxxxx;</br>4.xxxxxx', //从服务端获取更新的内容
-            cancelText: '取消',
-            okText: '升级'
-        });
-        confirmPopup.then(function (res) {
-            if (res) {
-                $ionicLoading.show({
-                    template: "已经下载：0%"
-                });
-                var url = "http://101.200.188.188/static/meanet.apk"; //可以从服务端获取更新APP的路径
-                var targetPath = "file:///storage/sdcard0/meanet.apk"; //APP下载存放的路径，可以使用cordova file插件进行相关配置
-                var trustHosts = true
-                var options = {};
-                var progressFunc = function (progress) {
-                    //进度，这里使用文字显示下载百分比
-                    $timeout(function () {
-                        var downloadProgress = (progress.loaded / progress.total) * 100;
-                        $ionicLoading.show({
-                            template: "已经下载：" + Math.floor(downloadProgress) + "%"
-                        });
-                        if (downloadProgress > 99) {
-                            $ionicLoading.hide();
-                        }
-                    })
-                };
-                var filetransfer = new FileTransfer(progressFunc);
-
-                filetransfer.download(url, targetPath,function (result) {
-                    // 打开下载下来的APP
-                    cordova.plugins.fileOpener2.open(targetPath, 'application/vnd.android.package-archive'
-                    ).then(function () {
-                            // 成功
-                        }, function (err) {
-                            // 错误
-                        });
-                    $ionicLoading.hide();
-                }, function (err) {
-                    alert('下载失败');
-                    console.log(err);
-                    $ionicLoading.hide();
-                },trustHosts,options);
-            } else {
-                // 取消更新
-            }
-        });
-    }
+    checkUpdate();
 })
 .config(function($stateProvider, $urlRouterProvider,$ionicConfigProvider, $httpProvider) {
     $httpProvider.defaults.withCredentials = true;
@@ -305,9 +234,6 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             $httpProvider.defaults.headers.put['X-UID'] = localStorage.getItem('uid');
             $httpProvider.defaults.headers.common['X-UID'] = localStorage.getItem('uid');
             */
-            if(config.url.indexOf('.html') < 0 && config.url.indexOf('refreshtoken') < 0){
-              //$("#ajaxLoading").html('数据加载中，请稍等').fadeIn(500);
-            }
             return config;
           },
           'response': function(response){
@@ -376,7 +302,8 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             url: '/tab',
             abstract: true,
             templateUrl: 'templates/tabs.html',
-            controller: "mainCtrl"
+            controller: "mainCtrl",
+            cache: false
         })
         .state('tabs.me', {
             url: '/me',
@@ -426,8 +353,8 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     templateUrl: 'templates/promotion.html',
                     controller: "Promotion"
                 }
-            }
-
+            },
+            cache: false
         })
         ;
 
@@ -486,6 +413,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
         });
         $http.post(host + '/api/user/login', user).then(function(res) {
             console.log(res);
+            $ionicLoading.hide();
             if (res.data.status === 200) {
                 ls.setObject('user', res.data);
 
@@ -495,16 +423,19 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                 console.log(res.data);
                 $state.go('tabs.homepage');
             } else {
+                console.log(res.data.msg);
                 $ionicLoading.show({
-                    template: '登录失败',
+                    template: res.data.msg||res.data.err,
                     duration: 2000
                 });
             }
 
         }, function(err) {
-            console.log(err);
         }).finally(function(){
-            $ionicLoading.hide();
+            setTimeout(function(){
+                $ionicLoading.hide();
+            },5000)
+
         });
 
     };
@@ -562,6 +493,9 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     method: "GET",
                     params: params
                 },
+                save: {
+                    method:"post"
+                },
                 delete: {
                     method: "delete",
                     params: {
@@ -570,6 +504,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                 }
             })
         }
+
         return {
             getList: getList,
             params: params
@@ -740,10 +675,8 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             });
         }
     ])
-    .controller('HomeTabCtrl', function(CategoryService, $ionicModal, $rootScope, marketList, $scope, $timeout) {
 
-    })
-    .controller('HomepageTabCtrl', function($ionicLoading, $http, CategoryService, $ionicSlideBoxDelegate, $ionicModal, SwiperService, $ionicModal, $rootScope, marketList, $scope, $timeout) {
+    .controller('HomepageTabCtrl', function($state, OrderService, $ionicLoading, $http, CategoryService, $ionicSlideBoxDelegate, $ionicModal, SwiperService, $ionicModal, $rootScope, marketList, $scope, $timeout) {
         $rootScope.host = host + "/";
         $scope.market_title = "药品市场";
         $scope.search = {
@@ -753,21 +686,25 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             good_name: '',
             good_promotion:false
         };
-        SwiperService.query(function(data){
-            $rootScope.focus = [];
-            data.forEach(function(item){
-                item.src = $rootScope.host + item.src;
-                $rootScope.focus.push(item);
+        if(!$rootScope.focus || $rootScope.focus.length < 1){
+            SwiperService.query(function(data){
+                $rootScope.focus = [];
+                data.forEach(function(item){
+                    item.src = $rootScope.host + item.src;
+                    $rootScope.focus.push(item);
+                });
+                $ionicSlideBoxDelegate.update();
             });
-            $ionicSlideBoxDelegate.update();
-        });
-        SwiperService.query({type: 1}, function(data){
-            $rootScope.adlist = [];
-            data.forEach(function(item){
-                item.src = $rootScope.host + item.src;
-                $rootScope.adlist.push(item);
+        }
+        if(!$rootScope.adlist || $rootScope.adlist.length < 1){
+            SwiperService.query({type: 1}, function(data){
+                $rootScope.adlist = [];
+                data.forEach(function(item){
+                    item.src = $rootScope.host + item.src;
+                    $rootScope.adlist.push(item);
+                });
             });
-        });
+        }
         $ionicModal.fromTemplateUrl('image-modal.html', {
           scope: $scope,
           animation: 'slide-in-up'
@@ -839,7 +776,10 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             }, 1000);
 
         };
-
+        $scope.gotoNewOrder = function(){
+            $scope.market_title = "填写订单";
+            $scope.boxgoto(3);
+        };
         $scope.doRefresh = function() {
             $timeout(function() {
                 marketList.params.page = 1;
@@ -984,6 +924,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
         }
         $scope.psearch = function(){
             $scope.page = 1;
+            $scope.catid = -1;
             $scope.parentPage = "search";
             $scope.doRefresh();
             $scope.items = [];
@@ -1071,7 +1012,6 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                             duration:2000
                         });
                     }
-                }).complete(function(){
                 })
             }else{
                 $ionicLoading.show({
@@ -1082,7 +1022,114 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             }
         }
 
-    })
+    // 填写订单模块
+    $scope.query={
+        key : ""
+    };
+    $scope.gotoSearchSupplie = function(){
+        $scope.query.key = "";
+        $scope.boxgoto(4);
+    };
+    $scope.neworder = {
+        supplie_id: "",
+        order_oper: $rootScope.user.realname,
+        order_beizu: "",
+        order_date: (new Date()).Format("yyyyMMdd"),
+        order_lastvaiddate: "",
+        order_status:1,
+        order_type:1,
+        comp_id: $rootScope.user.comp_id
+    };
+
+    $scope.processForm = function(){
+        console.log($scope.neworder);
+        if(!/^2[0-9]{5}$/.test($scope.neworder.supplie_id)){
+            alert('请选择供应商');
+            return;
+        }
+        if(!/^[0-9]{8}$/.test($scope.neworder.order_date)){
+            alert('请输入正确订单日期');
+            return;
+        }
+        // if(!/^[0-9]{8}$/.test($scope.formData.order_lastvaiddate)){
+        //     alert('请输入正确的交货订单日期');
+        //     return;
+        // }
+        var order = OrderService.getList();
+
+        var porder = new order({
+            supplie_id: $scope.neworder.supplie_id,
+            order_oper: $scope.neworder.order_oper,
+            order_beizu: $scope.neworder.order_beizu,
+            order_date: $scope.neworder.order_date,
+            order_lastvaiddate: $scope.neworder.order_lastvaiddate,
+            order_status:$scope.neworder.order_status,
+            order_type:$scope.neworder.order_type,
+            comp_id: $scope.neworder.comp_id
+        });
+        console.log(order,porder);
+        if(!$scope.neworder.supplie_id){
+            $ionicLoading.show({
+                template:"请选择供应商",
+                duration:2000
+            });
+            return;
+        }
+        porder.$save(function(ret){
+            if(ret.msg || ret.err){
+                $ionicLoading.show({
+                    template: ret.msg || ret.err,
+                    duration:2000
+                });
+                return;
+            }
+            if(ret.status == 200){
+                $ionicLoading.show({
+                    template:"新增订单成功",
+                    duration:2000
+                });
+                $scope.neworder = {
+                    supplie_id: "",
+                    order_oper: $rootScope.user.realname,
+                    order_beizu: "",
+                    order_date: (new Date()).Format("yyyyMMdd"),
+                    order_lastvaiddate: "",
+                    order_status:1,
+                    order_type:1,
+                    comp_id: $rootScope.user.comp_id
+                };
+                // $state.go('tabs.submit');
+            }
+        });
+    }
+    $scope.SearchComp = function(){
+        if($scope.query.key == ""){
+            $ionicLoading.show({
+                template:"请输入搜索关键字",
+                duration:2000
+            });
+            return;
+        }
+        $http.get(host + '/api/comp/suggest?companyid='+$rootScope.user.comp_id+'&query='+$scope.query.key).success(function(ret){
+            console.log(ret);
+            if(ret.status == 200 && ret.data && ret.data.length > 0){
+                $scope.suggest_comp_list = ret.data;
+            }else{
+                $ionicLoading.show({
+                    template:"无法查询到内容，请更换搜索关键字重试",
+                    duration:2000
+                });
+            }
+        })
+    }
+    $scope.selectCompany = function(id, name){
+        $scope.suggest_comp_list = [];
+        $scope.neworder.supplie_name = name;
+        $scope.neworder.supplie_id = id;
+        $scope.boxgoto(3);
+    };
+    // api/comp/suggest?companyid=200001&query=a
+})
 .controller('MeCtrl', function($state, $http, CategoryService, $ionicSlideBoxDelegate, $ionicModal, SwiperService, $ionicModal, $rootScope, marketList, $scope, $timeout, $ionicLoading) {
         $rootScope.host = host + "/";
         $scope.promotions = [];
@@ -1158,8 +1205,13 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
 
 
         $scope.boxgoto = function(index){
+            if(index == 0){
+                $scope.market_title = "我的";
+            }
             $ionicSlideBoxDelegate.$getByHandle('homepage').slide(index);
+
         };
+
         $scope.gotoCategory = function(){
             market_title = "药品分类";
             $scope.getPush();
@@ -1201,6 +1253,54 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     // window.location.reload();
                 }
             });
+        }
+
+        $scope.gotoChangePass = function(){
+            $scope.market_title="修改密码";
+            $scope.boxgoto(4);
+        };
+        $scope.cpass = {
+            newpass:"",
+            oldpass:"",
+            newpass2: ""
+        };
+        $scope.processPass = function(){
+            if($scope.cpass.oldpass == "" || $scope.cpass.newpass=="" || $scope.cpass.newpass2 ==""){
+                $ionicLoading.show({
+                    template:"密码不能为空",
+                    duration:2000
+                })
+                return;
+            }
+            if($scope.cpass.newpass != $scope.cpass.newpass2){
+                $ionicLoading.show({
+                    template:"两次新密码不一致，请重新输入",
+                    duration:2000
+                });
+                return;
+            }
+
+            $http.post(host + '/api/user/changepass', {
+                password: $scope.cpass.newpass,
+                oldpass:$scope.cpass.oldpass
+            }).success(function(ret) {
+                if (ret.status == 200) {
+                    $ionicLoading.show({
+                        template: '密码修改成功，请重新登录',
+                        duration: 2000
+                    });
+                    $rootScope.user = null;
+
+                    $state.go('signin');
+                } else {
+                    $ionicLoading.show({
+                        template: ret.err || ret.msg,
+                        duration: 2000
+                    });
+                }
+
+            });
+            console.log($scope.cpass);
         }
     })
 
@@ -1333,7 +1433,14 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             });
         };
         $scope.noMoreItemsAvailableItem = false;
-        $scope.vieworder = function(order_id){
+        $scope.vieworder = function(order_id, supplie_id, order_status, itemcount){
+            if(itemcount < 1){
+                $ionicLoading.show({
+                    template: "该订单暂无药品，请先添加药品",
+                    duration:3000
+                });
+                return;
+            }
             $scope.market_title = "订单详情";
             OrderDetailService.params.page = 1;
             $scope.order_id = order_id;
@@ -1505,7 +1612,108 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                 supplie_id: supplie_id
             });
             // $scope.items = [];
+        };
+        // 添加药品 3 4
+        // 填写订单模块
+        // /api/items/suggestHAS?companyid=200004&query=z
+        $scope.additems = function(order_id,supplie_id){
+            console.log('add items');
+            $scope.market_title = "选择药品";
+            $scope.search_companyid =supplie_id;
+            $scope.selectedOrderId = order_id;
+            $scope.boxgoto(3);
+        };
+        $scope.query={
+            key : ""
+        };
+        $scope.gotoSearchGood = function(){
+            $scope.query.key = "";
+            $scope.boxgoto(4);
+        };
+        $scope.neworder = {
+            good_name: "",
+            good_id:"",
+            good_number: 1,
+            order_id:$scope.selectedOrderId
+        };
+
+        $scope.sumbitGood = function(){
+            console.log($scope.neworder);
+            $scope.neworder.order_id = $scope.selectedOrderId;
+            if($scope.neworder.good_id == ""){
+                $ionicLoading.show({
+                    template:"请选择药品",
+                    duration:2000
+                })
+                return;
+            }
+            if($scope.neworder.good_number < 1){
+                $ionicLoading.show({
+                    template:"最少购买数量需要大于0",
+                    duration:2000
+                })
+                return;
+            }
+            $http.post(host+'/api/order/orderdetail',{
+                good_id:$scope.neworder.good_id,
+                good_number:$scope.neworder.good_number,
+                order_id:$scope.neworder.order_id,
+            }).success(function(ret){
+                if(ret.status == 200){
+                    $scope.market_title = "提交订单";
+                    // $scope.boxgoto(0);
+                    $ionicLoading.show({
+                        template:"添加成功",
+                        duration:1000
+                    });
+                    $scope.neworder = {
+                        good_name: "",
+                        good_id:"",
+                        good_number: 1,
+                        order_id:$scope.selectedOrderId
+                    };
+                    // $scope.doRefresh();
+                }else{
+                    $ionicLoading.show({
+                        template:ret.msg || ret.err,
+                        duration:2000
+                    })
+                }
+            });
         }
+        $scope.goReturnSubmit = function(){
+            $ionicLoading.show({
+                template:'正在加载'
+            });
+            $scope.doRefresh();
+            $scope.boxgoto(0);
+        }
+        $scope.SearchGood = function(companyid){
+            if($scope.query.key == ""){
+                $ionicLoading.show({
+                    template:"请输入搜索关键字",
+                    duration:2000
+                });
+                return;
+            }
+            $http.get(host+'/api/items/suggestHAS?companyid='+$scope.search_companyid+'&query='+$scope.query.key).success(function(ret){
+                console.log(ret);
+                if(ret.status == 200 && ret.data && ret.data.length > 0){
+                    $scope.suggest_comp_list = ret.data;
+                }else{
+                    $ionicLoading.show({
+                        template:"无法查询到内容，请更换搜索关键字重试",
+                        duration:2000
+                    });
+                }
+            })
+        }
+        $scope.selectCompany = function(id, name){
+            $scope.suggest_comp_list = [];
+            $scope.neworder.good_name = name;
+            $scope.neworder.good_id = id;
+            $scope.boxgoto(3);
+        };
     })
 
     .controller('RejectOrder', function($http, RejectOrderService, $state, $stateParams, $scope, $timeout) {
@@ -1732,10 +1940,16 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             OrderDetailService.params.page++;
         });
     })
-    .controller('Promotion', function($http, $scope, $timeout, $stateParams, $ionicHistory, OrderDetailService) {
+    .controller('Promotion', function($ionicSlideBoxDelegate, $http, $scope, $timeout, $stateParams, $ionicHistory, OrderDetailService) {
 
         //http://eanet.local.wanda.cn/api/push/push
+        if(fromNotice){
+            fromNotice = false;
+        };
         $scope.list = [];
+        $timeout(function(){
+            $ionicSlideBoxDelegate.$getByHandle('homepage').enableSlide(false);
+        },100);
         $scope.getPush = function() {
             $scope.list = [];
             $http.get(host + '/api/push/push').success(function(ret) {
