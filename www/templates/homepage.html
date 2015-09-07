@@ -33,29 +33,38 @@
                 </div>
                 <div class="tj_list clearfix">
                     <div class="main_tj">
-                        <img ng-src="{{adlist[0].src}}" class="scale" ng-click="showBigPic(adlist[0].src)" />
+                        <img ng-src="{{adlist[0].src}}" class="scale" ng-click="gotoAdMarket(adlist[0].good_id,1)" />
                     </div>
                     <div class="sub_tj">
-                        <img ng-src="{{adlist[1].src}}" class="scale" ng-click="showBigPic(adlist[1].src)" />
-                        <img ng-src="{{adlist[2].src}}" class="scale" ng-click="showBigPic(adlist[2].src)" />
+                        <img ng-src="{{adlist[1].src}}" class="scale" ng-click="gotoAdMarket(adlist[1].good_id,1)" />
+                        <img ng-src="{{adlist[2].src}}" class="scale" ng-click="gotoAdMarket(adlist[2].good_id,1)" />
                     </div>
                 </div>
                 <div class="tj_list clearfix">
                     <div class="main_tj">
-                        <img ng-src="{{adlist[3].src}}" class="scale" ng-click="showBigPic(adlist[3].src)" />
-                        <img ng-src="{{adlist[4].src}}" class="scale" ng-click="showBigPic(adlist[4].src)" />
+                        <img ng-src="{{adlist[3].src}}" class="scale" ng-click="gotoAdMarket(adlist[3].good_id,2)" />
+                        <img ng-src="{{adlist[4].src}}" class="scale" ng-click="gotoAdMarket(adlist[4].good_id,2)" />
                     </div>
                     <div class="sub_tj">
-                        <img ng-src="{{adlist[5].src}}" class="scale" ng-click="showBigPic(adlist[5].src)" />
+                        <img ng-src="{{adlist[5].src}}" class="scale" ng-click="gotoAdMarket(adlist[5].good_id,2)" />
                     </div>
                 </div>
                 <div class="tj_list clearfix">
                     <div class="main_tj">
-                        <img ng-src="{{adlist[6].src}}" class="scale" ng-click="showBigPic(adlist[6].src)" />
+                        <img ng-src="{{adlist[6].src}}" class="scale" ng-click="gotoAdMarket(adlist[6].good_id,3)" />
                     </div>
                     <div class="sub_tj">
-                        <img ng-src="{{adlist[7].src}}" class="scale" ng-click="showBigPic(adlist[7].src)" />
-                        <img ng-src="{{adlist[8].src}}" class="scale" ng-click="showBigPic(adlist[8].src)" />
+                        <img ng-src="{{adlist[7].src}}" class="scale" ng-click="gotoAdMarket(adlist[7].good_id,3)" />
+                        <img ng-src="{{adlist[8].src}}" class="scale" ng-click="gotoAdMarket(adlist[8].good_id,3)" />
+                    </div>
+                </div>
+                <div class="tj_list clearfix">
+                    <div class="main_tj">
+                        <img ng-src="{{adlist[9].src}}" class="scale" ng-click="gotoAdMarket(adlist[9].good_id,4)" />
+                        <img ng-src="{{adlist[10].src}}" class="scale" ng-click="gotoAdMarket(adlist[10].good_id,4)" />
+                    </div>
+                    <div class="sub_tj">
+                        <img ng-src="{{adlist[11].src}}" class="scale" ng-click="gotoAdMarket(adlist[11].good_id,4)" />
                     </div>
                 </div>
             </ion-content>
@@ -188,6 +197,47 @@
                         {{item.id}} {{item.name}}
                   </div>
                 </div>
+            </ion-content>
+        </ion-view>
+    </ion-slide>
+    <ion-slide>
+        <ion-view view-title="广告药品市场">
+            <div class="market-header">
+                    <i class="icon ion-android-arrow-back" ng-click="boxgoto(0)"></i>
+                    <span>{{market_title}}</span>
+                </div>
+            <ion-content padding="false">
+                <div style="margin-top:45px;"></div>
+                <ion-refresher pulling-text="下拉刷新" on-refresh="doAdRefresh()">
+                </ion-refresher>
+                <div class="list" padding>
+                    <div ng-repeat="item in adItems" href="javascript:///;" class="market-list">
+                        <div style="float:left">
+                            <img ng-src="{{host}}/{{item.good_img}}" style="width:70px;" />
+                            <div class="actions" ng-if="user.role_type==2">
+                                <i class="icon ion-android-remove" ng-click="changeNumber(item.good_id, -1)"></i>
+                                <input type="text" ng-model="formData[item.good_id]" value=0 />
+                                <i class="icon ion-android-add" ng-click="changeNumber(item.good_id,1)"></i>
+                            </div>
+                            <a ng-if="user.role_type==2" href="javascript:///;" class="buy" ng-click="buy(item.good_id, item.good_company,item.good_id)">购买</a>
+                        </div>
+                        <div>
+                            <h2>{{ item.good_name }}</h2>
+                            <span>规格：{{ item.good_gg }}</span>
+                            <span>生产商：{{ item.good_cp }}</span>
+                            <span>供应商：{{ item.company_name }}</span>
+                            <div class="center">
+                                <span class="center" style="color:#47e0de">批价:{{item.good_price | toInt}}</span>
+                                <span class="center" style="color:#e52f00">零价:{{item.good_lsj | toInt}}</span>
+                                <span class="center" style="color:#24d40f">折扣:{{item.good_price/item.good_lsj*100 | toTotalInt}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-if="hasNoAdData" class="emptydata">
+                        暂无数据
+                    </div>
+                </div>
+                <ion-infinite-scroll ng-if="!noMoreAdItemsAvailable" on-infinite="loadAdMore()" distance="10%"></ion-infinite-scroll>
             </ion-content>
         </ion-view>
     </ion-slide>

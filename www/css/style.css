@@ -65,7 +65,7 @@ html .clearfix {display: block;}
 	width: 100%;
 }
 .searchheader{
-	height: 64px;
+	height: 45px;
     background-color: #f93;
     position: fixed;
     top: 0;
@@ -74,11 +74,11 @@ html .clearfix {display: block;}
     padding: 0 56px;
 }
 .searchheader .icon{
-	font-size: 40px;
+	font-size: 30px;
     margin-left: 10px;
     margin-right: 10px;
     position: absolute;
-    top: 12px;
+    top: 8px;
     left: 0;
 }
 .searchheader .icon:last-child{
@@ -86,10 +86,11 @@ html .clearfix {display: block;}
 	right:0;
 }
 .searchheader input{
-	display: inline-block;
-	width:100%;
-	position: relative;
-	top:15px;
+    display: inline-block;
+    width: 100%;
+    position: relative;
+    top: 6px;
+    padding-left: 10px;
 }
 .menus{
 	text-align: center;
@@ -176,6 +177,12 @@ html .clearfix {display: block;}
 	height:86px;
 	background-size: cover;
 }
+.menus > a i.m_10{
+	background:url(../img/me/khml.png) no-repeat;
+	width:80px;
+	height:86px;
+	background-size: cover;
+}
 .menus.memenus{
 	margin-top:10px;
 	display: -webkit-box;
@@ -194,7 +201,7 @@ html .clearfix {display: block;}
 	width:50%;
 }
 .homepage{
-	margin-top:64px;
+	margin-top:45px;
 }
 
 .transparent {
@@ -474,4 +481,13 @@ html .clearfix {display: block;}
     color: #333;
     text-align: center;
     margin-top: 30px;
+}
+.unread{
+	position: absolute;
+    right: 10px;
+    top: 5px;
+    background-color: rgba(15,100,200,0.7);
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 5px;
 }

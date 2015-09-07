@@ -50,6 +50,9 @@ storeAppFilters.filter('rejectFilter', function() {
 });
 storeAppFilters.filter('filterDate', function() {
   return function(input) {
+    if(!input) {
+      return "";
+    }
     return input.split('T')[0];
   };
 });
