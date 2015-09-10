@@ -42,6 +42,8 @@
                         <div class="webkitbox">
                             <div class="">订货笔数：<span style="color:#f96">{{ item.itemcount }}</span></div>
                             <div class="">订单金额：<span  style="color:#c03">{{ item.total_amount }}</span></div>
+                            <div class="">业务：{{ item.salesman }}</div>
+                            <div class="">送货：{{ item.deliveryman }}</div>
                         </div>
                         <!--span class="pull-right" ng-class="{'calm':item.order_status == 5}">{{item.order_status | orderStatusFilter}}</span-->
                         <div ng-if="item.order_type == 1">

@@ -20,15 +20,19 @@
                 <div class="menus">
                     <a href="javascript:///;" ng-click="gotoCategory()">
                         <i class="m_01"></i>
+                        <span>市场</span>
                     </a>
                     <a href="#" ng-click="gotoNewOrder()">
                         <i class="m_02"></i>
+                        <span>写订单</span>
                     </a>
                     <a href="#">
                         <i class="m_03"></i>
+                        <span>交流</span>
                     </a>
                     <a href="#">
                         <i class="m_04"></i>
+                        <span>拍摄</span>
                     </a>
                 </div>
                 <div class="tj_list clearfix">
@@ -101,6 +105,7 @@
                                 <span class="center" style="color:#e52f00">零价:{{item.good_lsj | toInt}}</span>
                                 <span class="center" style="color:#24d40f">折扣:{{item.good_price/item.good_lsj*100 | toTotalInt}}</span>
                             </div>
+                            <span>库存：{{item.good_inventory}}</span>
                         </div>
                     </div>
                     <div ng-if="hasNoData" class="emptydata">
@@ -226,11 +231,13 @@
                             <span>规格：{{ item.good_gg }}</span>
                             <span>生产商：{{ item.good_cp }}</span>
                             <span>供应商：{{ item.company_name }}</span>
+                            <span>库存数量：{{item.good_inventory}}</span>
                             <div class="center">
                                 <span class="center" style="color:#47e0de">批价:{{item.good_price | toInt}}</span>
                                 <span class="center" style="color:#e52f00">零价:{{item.good_lsj | toInt}}</span>
                                 <span class="center" style="color:#24d40f">折扣:{{item.good_price/item.good_lsj*100 | toTotalInt}}</span>
                             </div>
+
                         </div>
                     </div>
                     <div ng-if="hasNoAdData" class="emptydata">

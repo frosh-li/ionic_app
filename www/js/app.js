@@ -52,13 +52,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
     $ionicPlatform.ready(function ($rootScope) {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
-        //主页面显示退出提示框
-        $ionicPlatform.registerBackButtonAction(function (e) {
-            console.log('regist');
-            e.preventDefault();
-            console.log('current',$ionicSlideBoxDelegate.$getByHandle('homepage').currentIndex());
-            return;
-        }, 101);
+
         if (window.cordova && window.cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
         }
@@ -66,21 +60,23 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             // org.apache.cordova.statusbar required
             StatusBar.styleDefault();
         }
-        window.plugins.jPushPlugin.init();
-        window.plugins.jPushPlugin.setDebugMode(false);
+
         //检测更新
         checkUpdate();
 
-        document.addEventListener("menubutton", onHardwareMenuKeyDown, false);
+        // document.addEventListener("menubutton", onHardwareMenuKeyDown, false);
         var onDeviceReady   = function(){
             console.log("JPushPlugin:Device ready!")
+            window.plugins.jPushPlugin.init();
+            window.plugins.jPushPlugin.setDebugMode(false);
             initiateUI();
+
         }
         var onGetRegistradionID = function(data) {
             try{
                 console.log("JPushPlugin:registrationID is "+data)
 
-                $("#registrationid").html(data);
+                //A$("#registrationid").html(data);
             }
             catch(exception){
                 console.log(exception);
@@ -141,7 +137,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             }
         }
         var initiateUI = function(){
-
+            // window.plugins.jPushPlugin.getRegistrationID(onGetRegistradionID);
             try{
                 window.plugins.jPushPlugin.init();
                 window.plugins.jPushPlugin.getRegistrationID(onGetRegistradionID);
@@ -150,7 +146,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                     window.plugins.jPushPlugin.setDebugModeFromIos();
                     window.plugins.jPushPlugin.setApplicationIconBadgeNumber(0);
                 }else{
-                    // window.plugins.jPushPlugin.setDebugMode(false);
+                    window.plugins.jPushPlugin.setDebugMode(false);
                 }
             }
             catch(exception){
@@ -497,6 +493,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
         params.page = 1;
         params.count = 12;
         params.good_name = "";
+        params.supplie_id = -1;
         //params.hasMore = true;
         function getList() {
             return $resource(host + '/api/items/market', {}, {
@@ -852,6 +849,11 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
             $scope.market_title = "填写订单";
             $scope.boxgoto(3);
         };
+        if($rootScope.user.role_type == 1){
+            marketList.params.supplie_id = $rootScope.user.comp_id;
+        }else{
+            delete marketList.params.supplie_id;
+        }
         $scope.doRefresh = function() {
             $timeout(function() {
                 marketList.params.page = 1;
@@ -2168,7 +2170,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
         });
     })
     .controller('Promotion', function($rootScope, $ionicSlideBoxDelegate, $http, $scope, $timeout, $stateParams, $ionicHistory, OrderDetailService) {
-
+        $rootScope.host = host + "/";
         //http://eanet.local.wanda.cn/api/push/push
         if(fromNotice){
             fromNotice = false;
@@ -2183,6 +2185,7 @@ angular.module('ionicApp', ['ionic', 'ngResource','storeAppFilters', 'locals'])
                 var cxMsg = $rootScope.user.cxMsg;
                 console.log(cxMsg);
                 ret.forEach(function(item,index){
+                    ret[index].img = $rootScope.host +ret[index].img;
                     if(cxMsg[item.id]){
                         ret[index].unread = false;
                     }else{

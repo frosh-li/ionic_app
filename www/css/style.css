@@ -94,94 +94,101 @@ html .clearfix {display: block;}
 }
 .menus{
 	text-align: center;
-	margin:-5px auto 0;
+	margin:0px auto 0;
 }
 .menus > a{
 	display:inline-block;
 	border:none;
 	outline: none;
+	color:#333;
+	text-decoration: none;
+	text-align: center;
 }
 .menus > a i{
 	display: block;
 
 }
 .menus > a i.m_01{
-	background:url(../img/home/PNG06.png) no-repeat;
-	width:80px;
-	height:86px;
-	background-size: cover;
+	background:url(../img/home/ico-2.png) no-repeat center center;
+	width:70px;
+	height:40px;
+	background-size: 50%;
 }
 .menus > a.activated i.m_01{
-	background:url(../img/home/PNG07.png) no-repeat;
-	width:80px;
-	height:86px;
-	background-size: cover;
+	/*
+	background:url(../img/home/PNG07.png?1) no-repeat center center;
+	width:70px;
+	height:40px;
+	*/
 }
 .menus > a i.m_02{
-	background:url(../img/home/PNG08.png) no-repeat;
-	width:65px;
-	height:86px;
-	background-size: cover;
+	background:url(../img/home/ico-3.png) no-repeat center center;;
+	width:70px;
+	height:40px;
+	background-size: 50%;
 }
 .menus > a.activated i.m_02{
-	background:url(../img/home/PNG09.png) no-repeat;
-	width:65px;
-	height:86px;
-	background-size: cover;
+	/*
+	background:url(../img/home/PNG09.png?1) no-repeat center center;;
+	width:70px;
+	height:40px;
+	*/
 }
 .menus > a i.m_03{
-	background:url(../img/home/PNG10.png) no-repeat;
-	width:65px;
-	height:86px;
-	background-size: cover;
+	background:url(../img/home/ico-1.png) no-repeat center center;;
+	width:70px;
+	height:40px;
+	background-size: 50%;
 }
 .menus > a i.m_04{
-	background:url(../img/home/PNG11.png) no-repeat;
-	width:80px;
-	height:86px;
-	background-size: cover;
+	background:url(../img/home/ico-4.png) no-repeat center center;;
+	width:70px;
+	height:40px;
+	background-size: 50%;
 }
 .menus > a.activated i.m_04{
-	background:url(../img/home/PNG12.png) no-repeat;
-	width:80px;
-	height:86px;
-	background-size: cover;
+	/*
+	background:url(../img/home/PNG12.png?1) no-repeat;
+	width:70px;
+	height:40px;
+	background-size: 50%;
+	*/
 }
 .menus > a i.m_05{
-	background:url(../img/me/PNG06.png) no-repeat;
+	background:url(../img/me/ico-1.png) no-repeat center center;
 	width:80px;
-	height:86px;
-	background-size: cover;
+	height:30px;
+	background-size: 50%;
 }
 .menus > a i.m_06{
-	background:url(../img/me/PNG07.png) no-repeat;
+	background:url(../img/me/PNG07.png) no-repeat center center;
 	width:80px;
-	height:86px;
-	background-size: cover;
+	height:30px;
+	background-size: 50%;
 }
 .menus > a i.m_07{
-	background:url(../img/me/PNG08.png) no-repeat;
+	background:url(../img/me/ico-5.png) no-repeat center center;
 	width:80px;
-	height:86px;
-	background-size: cover;
+	height:30px;
+	background-size: 50%;
 }
 .menus > a i.m_08{
-	background:url(../img/me/PNG09.png) no-repeat;
+	background:url(../img/me/ico-3.png) no-repeat center center;
 	width:80px;
-	height:86px;
-	background-size: cover;
+	height:30px;
+	background-size: 50%;
 }
 .menus > a i.m_09{
-	background:url(../img/me/PNG10.png) no-repeat;
+	background:url(../img/me/ico-2.png) no-repeat center center;
 	width:80px;
-	height:86px;
-	background-size: cover;
+	height:30px;
+	background-size: 50%;
 }
 .menus > a i.m_10{
-	background:url(../img/me/khml.png) no-repeat;
+	background:url(../img/me/ico-5.png) no-repeat center center;
 	width:80px;
-	height:86px;
-	background-size: cover;
+	height:30px;
+	background-size: 50%;
 }
 .menus.memenus{
 	margin-top:10px;
@@ -190,7 +197,7 @@ html .clearfix {display: block;}
 }
 .menus.memenus > a i{
 	width: 4.7rem;
-    height: 4.7rem;
+    height: 3rem;
 }
 .tj_list .main_tj{
 	float:left;
